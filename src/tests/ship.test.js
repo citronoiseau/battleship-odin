@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import Ship from "./ship";
+import Ship from "../classes/ship";
 
 const testingShip = new Ship(3);
 

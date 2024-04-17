@@ -14,7 +14,7 @@ test("Gameboard is placing horizontal ship(length 2) in top-left corner", () => 
 
 test("GameBoard is not placing the ship(length 2) outside of the board", () => {
   const returnMessage = testingGameBoard.placeShip(1, -1, -1, true);
-  expect(returnMessage).toBe("Ship can't be placed");
+  expect(returnMessage).toBeFalsy();
 });
 
 test("GameBoard is placing vertical ship(length 2) in top-right corner", () => {
@@ -26,7 +26,7 @@ test("GameBoard is placing vertical ship(length 2) in top-right corner", () => {
 
 test("Colliding ship is not placed", () => {
   const returnMessage = testingGameBoard.placeShip(3, 8, 0, true);
-  expect(returnMessage).toBe("Ship can't be placed");
+  expect(returnMessage).toBeFalsy();
 });
 
 test("Gameboard is placing horizontal ship(length 3) in bottom-left corner", () => {
@@ -45,12 +45,12 @@ test("Gameboard is placing vertical ship(length 3) in bottom-right corner", () =
 
 test("Gameboard is not placing the same ship", () => {
   const returnMessage = testingGameBoard.placeShip(5, 9, 7, false);
-  expect(returnMessage).toBe("Ship can't be placed");
+  expect(returnMessage).toBeFalsy();
 });
 
 test("Gameboard is not placing vertical ship(length 3) if exceeds board", () => {
   const returnMessage = testingGameBoard.placeShip(6, 9, 4, true);
-  expect(returnMessage).toBe("Ship can't be placed");
+  expect(returnMessage).toBeFalsy();
 });
 
 test("Gameboard is placing horizontal ship(length 4) in the middle", () => {
@@ -65,4 +65,15 @@ test("Gameboard is placing vertical ship(length 4) in the middle", () => {
   expect(returnMessage).toBe(
     "Your ship of length 4 is positioned at [0, 3] to [0, 6]",
   );
+});
+
+// ship auto placement test
+
+const testingGameBoard2 = new GameBoard();
+test("All ships are placed randomly", () => {
+  testingGameBoard2.placeShipsRandomly();
+  const allShipsPlaced = testingGameBoard2.ships.every((ship) =>
+    testingGameBoard2.isShipAlreadyPlaced(ship.getId()),
+  );
+  expect(allShipsPlaced).toBe(true);
 });

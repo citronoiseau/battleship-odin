@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import {
   createPatrolBoats,
   createSubmarines,
@@ -47,6 +48,19 @@ export default class GameBoard {
     return false;
   }
 
+  placeShipsRandomly() {
+    this.ships.forEach((ship) => {
+      let x;
+      let y;
+      let isHorizontal;
+      do {
+        x = Math.floor(Math.random() * this.size);
+        y = Math.floor(Math.random() * this.size);
+        isHorizontal = Math.random() < 0.5;
+      } while (!this.placeShip(ship.getId(), x, y, isHorizontal));
+    });
+  }
+
   placeShip(shipId, x, y, isHorizontal) {
     const ship = this.ships.find((neededShip) => neededShip.getId() === shipId);
     const shipLength = ship.length;
@@ -65,17 +79,15 @@ export default class GameBoard {
         return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x}, ${y + shipLength - 1}]`;
       }
     } else {
-      return "Ship can't be placed";
+      // return "Ship can't be placed";
+      return false;
     }
   }
 
-  isShipAlreadyPlaced(id, x, y) {
-    const ship = this.ships.find((neededShip) => neededShip.getId() === id);
-    const shipOnBoard = this.getShip(x, y);
-    if (shipOnBoard && shipOnBoard.getId() === ship.getId()) {
-      return true;
-    }
-    return false;
+  isShipAlreadyPlaced(id) {
+    return this.board.some((row) =>
+      row.some((cell) => cell && cell.getId() === id),
+    );
   }
 
   checkAvailability(id, x, y, isHorizontal) {
@@ -92,7 +104,7 @@ export default class GameBoard {
       return false;
     }
 
-    if (this.isShipAlreadyPlaced(id, x, y)) return false;
+    if (this.isShipAlreadyPlaced(id)) return false;
 
     // check left, right, above, and below neighbors + if ship cells itself are occupied
     for (let i = 0; i < shipLength; i++) {

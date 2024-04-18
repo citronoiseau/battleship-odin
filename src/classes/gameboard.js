@@ -9,18 +9,24 @@ import {
 export default class GameBoard {
   constructor() {
     this.size = 10;
-    this.board = [];
-    this.initializeBoard();
+    this.board = this.initializeBoard();
     this.ships = this.initializeShips();
+    this.placedShips = new Set();
+    this.missedHits = 0;
   }
 
   initializeBoard() {
+    const board = [];
     for (let i = 0; i < this.size; i++) {
-      this.board[i] = [];
+      board[i] = [];
       for (let j = 0; j < this.size; j++) {
-        this.board[i][j] = 0;
+        board[i][j] = {
+          ship: null,
+          hit: false,
+        };
       }
     }
+    return board;
   }
 
   initializeShips() {
@@ -41,9 +47,9 @@ export default class GameBoard {
   }
 
   getShip(x, y) {
-    if (this.board[x][y] !== 0) {
-      const ship = this.board[x][y];
-      return ship;
+    if (this.board[x][y].ship !== null) {
+      const neededShip = this.board[x][y].ship;
+      return neededShip;
     }
     return false;
   }
@@ -58,36 +64,53 @@ export default class GameBoard {
         y = Math.floor(Math.random() * this.size);
         isHorizontal = Math.random() < 0.5;
       } while (!this.placeShip(ship.getId(), x, y, isHorizontal));
+      this.placedShips.add(ship.getId());
     });
   }
 
   placeShip(shipId, x, y, isHorizontal) {
-    const ship = this.ships.find((neededShip) => neededShip.getId() === shipId);
-    const shipLength = ship.length;
+    const newShip = this.ships.find(
+      (neededShip) => neededShip.getId() === shipId,
+    );
+    const shipLength = newShip.length;
 
     if (this.checkAvailability(shipId, x, y, isHorizontal)) {
       if (isHorizontal) {
         for (let i = 0; i < shipLength; i++) {
-          this.board[x + i][y] = ship;
+          this.board[x + i][y].ship = newShip;
         }
         return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x + shipLength - 1}, ${y}]`;
       }
       if (!isHorizontal) {
         for (let i = 0; i < shipLength; i++) {
-          this.board[x][y + i] = ship;
+          this.board[x][y + i].ship = newShip;
         }
         return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x}, ${y + shipLength - 1}]`;
       }
+      this.placedShips.add(shipId);
     } else {
-      // return "Ship can't be placed";
       return false;
     }
   }
 
+  removeShip(id) {
+    const ship = this.ships.find((ship) => ship.getId() === id);
+    if (!ship) return false;
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        if (this.board[i][j].ship === ship) {
+          this.board[i][j].ship = null;
+        }
+      }
+    }
+
+    this.placedShips.delete(id);
+    return "Ship successfully deleted!";
+  }
+
   isShipAlreadyPlaced(id) {
-    return this.board.some((row) =>
-      row.some((cell) => cell && cell.getId() === id),
-    );
+    return this.placedShips.has(id);
   }
 
   checkAvailability(id, x, y, isHorizontal) {
@@ -108,10 +131,10 @@ export default class GameBoard {
 
     // check left, right, above, and below neighbors + if ship cells itself are occupied
     for (let i = 0; i < shipLength; i++) {
-      if (x > 0 && this.board[x - 1][y] !== 0) return false; // left neighbor
-      if (x < this.size - 1 && this.board[x + 1][y] !== 0) return false; // right neighbor
-      if (y > 0 && this.board[x][y - 1] !== 0) return false; // above neighbor
-      if (y < this.size - 1 && this.board[x][y + 1] !== 0) return false; // below neighbor
+      if (x > 0 && this.board[x - 1][y].ship !== null) return false; // left neighbor
+      if (x < this.size - 1 && this.board[x + 1][y].ship !== null) return false; // right neighbor
+      if (y > 0 && this.board[x][y - 1].ship !== null) return false; // above neighbor
+      if (y < this.size - 1 && this.board[x][y + 1].ship !== null) return false; // below neighbor
 
       if (isHorizontal) {
         x++;
@@ -122,18 +145,22 @@ export default class GameBoard {
 
     // Check diagonal placements
     if (
-      ((x - 1 >= 0 && y - 1 >= 0 && this.board[x - 1][y - 1] !== 0) ||
+      ((x - 1 >= 0 && y - 1 >= 0 && this.board[x - 1][y - 1].ship !== null) ||
         x - 1 < 0 ||
         y - 1 < 0) && // top-left
-      ((x + 1 < this.size && y - 1 >= 0 && this.board[x + 1][y - 1] !== 0) ||
+      ((x + 1 < this.size &&
+        y - 1 >= 0 &&
+        this.board[x + 1][y - 1].ship !== null) ||
         x + 1 >= this.size ||
         y - 1 < 0) && // top-right
-      ((x - 1 >= 0 && y + 1 < this.size && this.board[x - 1][y + 1] !== 0) ||
+      ((x - 1 >= 0 &&
+        y + 1 < this.size &&
+        this.board[x - 1][y + 1].ship !== null) ||
         x - 1 < 0 ||
         y + 1 >= this.size) && // bottom-left
       ((x + 1 < this.size &&
         y + 1 < this.size &&
-        this.board[x + 1][y + 1] !== 0) ||
+        this.board[x + 1][y + 1].ship !== null) ||
         x + 1 >= this.size ||
         y + 1 >= this.size) // bottom-right
     ) {
@@ -141,5 +168,28 @@ export default class GameBoard {
     }
 
     return true;
+  }
+
+  receiveAttack(x, y) {
+    const ship = this.getShip(x, y);
+    if (ship) {
+      ship.hit();
+      this.board[x][y].hit = true;
+      const allSunk = this.areAllShipsSunk();
+      if (allSunk) {
+        return "All sunk!";
+      }
+      return "Hit!";
+    }
+    this.missedHits += 1;
+    return "You missed!";
+  }
+
+  areAllShipsSunk() {
+    const allSunk = this.ships.every((ship) => ship.isSunk);
+    if (allSunk) {
+      return true;
+    }
+    return false;
   }
 }

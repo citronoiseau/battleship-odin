@@ -56,6 +56,7 @@ export default class GameBoard {
 
   placeShipsRandomly() {
     this.ships.forEach((ship) => {
+      let successfulPlacing = false;
       let x;
       let y;
       let isHorizontal;
@@ -63,7 +64,10 @@ export default class GameBoard {
         x = Math.floor(Math.random() * this.size);
         y = Math.floor(Math.random() * this.size);
         isHorizontal = Math.random() < 0.5;
-      } while (!this.placeShip(ship.getId(), x, y, isHorizontal));
+        if (!this.placeShip(ship.getId(), x, y, isHorizontal)) {
+          successfulPlacing = true;
+        }
+      } while (!successfulPlacing);
       this.placedShips.add(ship.getId());
     });
   }
@@ -88,13 +92,13 @@ export default class GameBoard {
         return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x}, ${y + shipLength - 1}]`;
       }
       this.placedShips.add(shipId);
-    } else {
-      return false;
+      return true;
     }
+    return false;
   }
 
   removeShip(id) {
-    const ship = this.ships.find((ship) => ship.getId() === id);
+    const ship = this.ships.find((neededShip) => neededShip.getId() === id);
     if (!ship) return false;
 
     for (let i = 0; i < this.size; i++) {
@@ -186,7 +190,7 @@ export default class GameBoard {
   }
 
   areAllShipsSunk() {
-    const allSunk = this.ships.every((ship) => ship.isSunk);
+    const allSunk = this.ships.every((ship) => ship.isSunk());
     if (allSunk) {
       return true;
     }

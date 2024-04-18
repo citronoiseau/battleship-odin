@@ -67,6 +67,21 @@ test("Gameboard is placing vertical ship(length 4) in the middle", () => {
   );
 });
 
+test("Gameboard is deleting a ship", () => {
+  testingGameBoard.removeShip(8);
+  const result = testingGameBoard.isShipAlreadyPlaced(8);
+  expect(result).toBeFalsy();
+});
+
+test("Ships are getting hit", () => {
+  const returnMessage = testingGameBoard.receiveAttack(3, 4);
+  expect(returnMessage).toBe("Hit!");
+});
+
+test("Player can miss", () => {
+  const returnMessage = testingGameBoard.receiveAttack(0, 3);
+  expect(returnMessage).toBe("You missed!");
+});
 // ship auto placement test
 
 const testingGameBoard2 = new GameBoard();

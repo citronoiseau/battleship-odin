@@ -117,11 +117,45 @@ export default class GameBoard {
     return this.placedShips.has(id);
   }
 
+  receiveAttack(x, y) {
+    const ship = this.getShip(x, y);
+    if (ship) {
+      ship.hit();
+      this.board[x][y].hit = true;
+      const allSunk = this.areAllShipsSunk();
+      if (allSunk) {
+        return "All sunk!";
+      }
+      return "Hit!";
+    }
+    this.missedHits += 1;
+    return "You missed!";
+  }
+
+  areAllShipsSunk() {
+    const allSunk = this.ships.every((ship) => ship.isSunk());
+    if (allSunk) {
+      return true;
+    }
+    return false;
+  }
+
+  // placement functions
+
   checkAvailability(id, x, y, isHorizontal) {
     const shipLength = this.ships[id].length;
+    if (!this.isWithinBoard(shipLength, x, y, isHorizontal)) return false;
+    if (this.isShipAlreadyPlaced(id)) return false;
+    if (!this.hasNeighbors(shipLength, x, y, isHorizontal)) return false;
+    if (!this.hasDiagonalNeighbors(x, y)) return false;
+
+    return true;
+  }
+
+  isWithinBoard(shipLength, x, y, isHorizontal) {
     if (x < 0 || x >= this.size || y < 0 || y >= this.size) {
       return false;
-    } // check if exceeds the board
+    }
 
     if (isHorizontal) {
       if (x + shipLength - 1 >= this.size) {
@@ -130,10 +164,10 @@ export default class GameBoard {
     } else if (y + shipLength - 1 >= this.size) {
       return false;
     }
+    return true;
+  }
 
-    if (this.isShipAlreadyPlaced(id)) return false;
-
-    // check left, right, above, and below neighbors + if ship cells itself are occupied
+  hasNeighbors(shipLength, x, y, isHorizontal) {
     for (let i = 0; i < shipLength; i++) {
       if (x > 0 && this.board[x - 1][y].ship !== null) return false; // left neighbor
       if (x < this.size - 1 && this.board[x + 1][y].ship !== null) return false; // right neighbor
@@ -146,8 +180,10 @@ export default class GameBoard {
         y++;
       }
     }
+    return true;
+  }
 
-    // Check diagonal placements
+  hasDiagonalNeighbors(x, y) {
     if (
       ((x - 1 >= 0 && y - 1 >= 0 && this.board[x - 1][y - 1].ship !== null) ||
         x - 1 < 0 ||
@@ -170,30 +206,6 @@ export default class GameBoard {
     ) {
       return false;
     }
-
     return true;
-  }
-
-  receiveAttack(x, y) {
-    const ship = this.getShip(x, y);
-    if (ship) {
-      ship.hit();
-      this.board[x][y].hit = true;
-      const allSunk = this.areAllShipsSunk();
-      if (allSunk) {
-        return "All sunk!";
-      }
-      return "Hit!";
-    }
-    this.missedHits += 1;
-    return "You missed!";
-  }
-
-  areAllShipsSunk() {
-    const allSunk = this.ships.every((ship) => ship.isSunk());
-    if (allSunk) {
-      return true;
-    }
-    return false;
   }
 }

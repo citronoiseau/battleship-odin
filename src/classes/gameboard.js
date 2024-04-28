@@ -5,6 +5,7 @@ import {
   createCarrier,
   createBattleShips,
 } from "../functions/createShips";
+import shuffleArray from "../functions/shuffleArr";
 
 export default class GameBoard {
   constructor() {
@@ -46,6 +47,13 @@ export default class GameBoard {
     return ships;
   }
 
+  restartBoard() {
+    this.board = this.initializeBoard();
+    this.ships = this.initializeShips();
+    this.placedShips = new Set();
+    this.missedHits = 0;
+  }
+
   getShip(x, y) {
     if (this.board[x][y].ship !== null) {
       const neededShip = this.board[x][y].ship;
@@ -55,19 +63,35 @@ export default class GameBoard {
   }
 
   placeShipsRandomly() {
-    this.ships.forEach((ship) => {
+    this.restartBoard();
+    const randomizedShips = shuffleArray(this.ships);
+    randomizedShips.forEach((ship) => {
       let successfulPlacing = false;
       let x;
       let y;
       let isHorizontal;
-      do {
-        x = Math.floor(Math.random() * this.size);
-        y = Math.floor(Math.random() * this.size);
+      let attemptCount = 0; // Track the number of attempts
+      const maxAttempts = 100;
+      while (!successfulPlacing && attemptCount < maxAttempts) {
         isHorizontal = Math.random() < 0.5;
-        if (!this.placeShip(ship.getId(), x, y, isHorizontal)) {
+        if (isHorizontal) {
+          y = Math.floor(Math.random() * (this.size - ship.length + 1));
+          x = Math.floor(Math.random() * this.size);
+        } else {
+          y = Math.floor(Math.random() * this.size);
+          x = Math.floor(Math.random() * (this.size - ship.length + 1));
+        }
+        if (this.placeShip(ship.getId(), x, y, isHorizontal)) {
           successfulPlacing = true;
         }
-      } while (!successfulPlacing);
+        attemptCount++;
+      }
+      if (!successfulPlacing) {
+        console.log(
+          `Failed to place ship ${ship.getId()} after ${maxAttempts} attempts.`,
+        );
+        this.placeShipsRandomly();
+      }
       this.placedShips.add(ship.getId());
     });
   }
@@ -76,20 +100,20 @@ export default class GameBoard {
     const newShip = this.ships.find(
       (neededShip) => neededShip.getId() === shipId,
     );
-    const shipLength = newShip.length;
 
-    if (this.checkAvailability(shipId, x, y, isHorizontal)) {
+    const shipLength = newShip.length;
+    if (this.checkAvailability(shipId, shipLength, x, y, isHorizontal)) {
       if (isHorizontal) {
-        for (let i = 0; i < shipLength; i++) {
-          this.board[x + i][y].ship = newShip;
-        }
-        return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x + shipLength - 1}, ${y}]`;
-      }
-      if (!isHorizontal) {
-        for (let i = 0; i < shipLength; i++) {
+        for (let i = 0; i <= shipLength - 1; i++) {
           this.board[x][y + i].ship = newShip;
         }
         return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x}, ${y + shipLength - 1}]`;
+      }
+      if (!isHorizontal) {
+        for (let i = 0; i <= shipLength - 1; i++) {
+          this.board[x + i][y].ship = newShip;
+        }
+        return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x + shipLength - 1}, ${y}]`;
       }
       this.placedShips.add(shipId);
       return true;
@@ -128,6 +152,7 @@ export default class GameBoard {
       }
       return "Hit!";
     }
+    this.board[x][y].hit = true;
     this.missedHits += 1;
     return "You missed!";
   }
@@ -142,12 +167,12 @@ export default class GameBoard {
 
   // placement functions
 
-  checkAvailability(id, x, y, isHorizontal) {
-    const shipLength = this.ships[id].length;
+  checkAvailability(id, shipLength, x, y, isHorizontal) {
     if (!this.isWithinBoard(shipLength, x, y, isHorizontal)) return false;
     if (this.isShipAlreadyPlaced(id)) return false;
-    if (!this.hasNeighbors(shipLength, x, y, isHorizontal)) return false;
-    if (!this.hasDiagonalNeighbors(x, y)) return false;
+    if (!this.shipCellsAreEmpty(shipLength, x, y, isHorizontal)) return false;
+    if (this.hasNeighbors(shipLength, x, y, isHorizontal)) return false;
+    if (this.hasDiagonalNeighbors(shipLength, x, y, isHorizontal)) return false;
 
     return true;
   }
@@ -158,54 +183,110 @@ export default class GameBoard {
     }
 
     if (isHorizontal) {
+      if (y + shipLength - 1 >= this.size) {
+        return false;
+      }
+    }
+    if (!isHorizontal) {
       if (x + shipLength - 1 >= this.size) {
         return false;
       }
-    } else if (y + shipLength - 1 >= this.size) {
-      return false;
+    }
+
+    return true;
+  }
+
+  shipCellsAreEmpty(shipLength, x, y, isHorizontal) {
+    if (isHorizontal) {
+      for (let i = 0; i < shipLength; i++) {
+        if (this.board[x][y + i].ship !== null) {
+          return false;
+        }
+      }
+    } else {
+      for (let i = 0; i < shipLength; i++) {
+        if (this.board[x + i][y].ship !== null) {
+          return false;
+        }
+      }
     }
     return true;
   }
 
   hasNeighbors(shipLength, x, y, isHorizontal) {
-    for (let i = 0; i < shipLength; i++) {
-      if (x > 0 && this.board[x - 1][y].ship !== null) return false; // left neighbor
-      if (x < this.size - 1 && this.board[x + 1][y].ship !== null) return false; // right neighbor
-      if (y > 0 && this.board[x][y - 1].ship !== null) return false; // above neighbor
-      if (y < this.size - 1 && this.board[x][y + 1].ship !== null) return false; // below neighbor
-
-      if (isHorizontal) {
-        x++;
-      } else {
-        y++;
-      }
+    if (isHorizontal) {
+      if (y !== 0 && this.board[x][y - 1].ship !== null) return true; // check left neighbor
+      if (
+        y + shipLength - 1 !== this.size - 1 &&
+        this.board[x][y + shipLength].ship !== null
+      )
+        return true; // check right neighbor
+      if (x !== 0) {
+        for (let i = 0; i < shipLength; i++) {
+          if (this.board[x - 1][y + i].ship !== null) return true;
+        }
+      } // check top neighbors
+      if (x !== this.size - 1) {
+        for (let i = 0; i < shipLength; i++) {
+          if (this.board[x + 1][y + i].ship !== null) return true;
+        }
+      } // check bottom neighbors x
+    } else {
+      if (y !== 0) {
+        for (let i = 0; i < shipLength; i++) {
+          if (this.board[x + i][y - 1].ship !== null) return true;
+        }
+      } // check left neighbor
+      if (y !== this.size - 1) {
+        for (let i = 0; i < shipLength; i++) {
+          if (this.board[x + i][y + 1].ship !== null) return true;
+        }
+      } // check right neighbor
+      if (x !== 0 && this.board[x - 1][y].ship !== null) return true; // check top neighbor
+      if (
+        x + shipLength - 1 !== this.size - 1 &&
+        this.board[x + shipLength][y].ship !== null
+      )
+        return true; // check bottom neighbor
     }
-    return true;
+    return false;
   }
 
-  hasDiagonalNeighbors(x, y) {
-    if (
-      ((x - 1 >= 0 && y - 1 >= 0 && this.board[x - 1][y - 1].ship !== null) ||
-        x - 1 < 0 ||
-        y - 1 < 0) && // top-left
-      ((x + 1 < this.size &&
-        y - 1 >= 0 &&
-        this.board[x + 1][y - 1].ship !== null) ||
-        x + 1 >= this.size ||
-        y - 1 < 0) && // top-right
-      ((x - 1 >= 0 &&
-        y + 1 < this.size &&
-        this.board[x - 1][y + 1].ship !== null) ||
-        x - 1 < 0 ||
-        y + 1 >= this.size) && // bottom-left
-      ((x + 1 < this.size &&
-        y + 1 < this.size &&
-        this.board[x + 1][y + 1].ship !== null) ||
-        x + 1 >= this.size ||
-        y + 1 >= this.size) // bottom-right
-    ) {
-      return false;
+  hasDiagonalNeighbors(shipLength, x, y, isHorizontal) {
+    console.log(`Before test: ${x}, ${y}`);
+    if (x > 0 && y > 0 && this.board[x - 1][y - 1].ship !== null) return true; // top left diagonal
+    if (!isHorizontal) {
+      if (
+        y > 0 &&
+        x + shipLength - 1 < 9 &&
+        this.board[x + shipLength][y - 1].ship !== null
+      )
+        return true; // bottom left diagonal
+      if (x > 0 && y < 9 && this.board[x - 1][y + 1].ship !== null) return true; // top right diagonal
+      if (
+        x + shipLength - 1 < 9 &&
+        y < 9 &&
+        this.board[x + shipLength][y + 1].ship !== null
+      )
+        return true; // bottom right diagonal
     }
-    return true;
+    if (isHorizontal) {
+      if (y > 0 && x < 9 && this.board[x + 1][y - 1].ship !== null) return true; // bottom left diagonal
+      if (
+        x > 0 &&
+        y + shipLength - 1 < 9 &&
+        this.board[x - 1][y + shipLength].ship !== null
+      )
+        return true; // top right diagonal
+      if (
+        x < 9 &&
+        y + shipLength - 1 < 9 &&
+        this.board[x + 1][y + shipLength].ship !== null
+      )
+        return true; // bottom right diagonal
+    }
+
+    console.log(`Success of ${x}, ${y}`);
+    return false;
   }
 }

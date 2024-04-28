@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.gameContainer {
+  margin-top: 50px;
+  justify-content: center;
+  display: flex;
+  gap: 80px;
+  flex-wrap: wrap;
+}
+
+.gameboardContainer {
+  margin: 20px;
+}
+.gameboard {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  background-color: #e0e0e0;
+  border: 1px solid #ccc;
+}
+
+.cell:hover {
+  background-color: #cfcfcf;
+  transition: all 0.1s ease-out;
+}
+
+.cell.ship {
+  background-color: #202020;
+}

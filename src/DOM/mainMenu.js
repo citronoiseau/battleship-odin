@@ -21,6 +21,7 @@ function createGameBoard(typeofPlayer, parent) {
       cell.dataset.column = j;
       gameboard.appendChild(cell);
       cell.classList.add("cell");
+      cell.classList.add(`${typeofPlayer}`);
       cell.addEventListener("click", () => handleClick(i, j));
     }
   }
@@ -28,8 +29,18 @@ function createGameBoard(typeofPlayer, parent) {
   parent.appendChild(gameboardContainer);
 }
 
+function clearBoard(board) {
+  const cells = board.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    if (cell.classList.contains("ship")) {
+      cell.classList.remove("ship");
+    }
+  });
+}
+
 export function renderBoard(board, typeOfPlayer) {
   const domBoard = document.getElementById(`${typeOfPlayer}board`);
+  clearBoard(domBoard);
   for (let i = 0; i < board.size; i++) {
     for (let j = 0; j < board.size; j++) {
       const cell = domBoard.querySelector(
@@ -37,6 +48,9 @@ export function renderBoard(board, typeOfPlayer) {
       );
       if (board.board[i][j].ship) {
         cell.classList.add("ship");
+      }
+      if (board.board[i][j].hit) {
+        cell.classList.add("hit");
       }
     }
   }
@@ -50,7 +64,8 @@ export function mainMenu() {
   createGameBoard("player", gameContainer);
   createGameBoard("computer", gameContainer);
   const playerBoardContainer = document.getElementById("playerBoardContainer");
-  const shuffleButton = document.createElement("button");
-  playerBoardContainer.appendChild(shuffleButton);
-  shuffleButton.textContent = "Randomize ships!";
+  const randomizeButton = document.createElement("button");
+  randomizeButton.id = "randomButton";
+  playerBoardContainer.appendChild(randomizeButton);
+  randomizeButton.textContent = "Randomize ships!";
 }

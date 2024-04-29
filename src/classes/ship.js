@@ -17,6 +17,7 @@ export default class Ship {
     if (this.hits === this.length) {
       this.sunk = true;
     }
+    return this.sunk;
   }
 
   setId(id) {

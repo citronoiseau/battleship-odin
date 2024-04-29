@@ -33,6 +33,14 @@
   transition: all 0.1s ease-out;
 }
 
-.cell.ship {
+.cell.player.ship {
   background-color: #202020;
+}
+.cell.computer.ship {
+  background-color: #6b0000;
+}
+.hit {
+  pointer-events: none;
+  background-image: url("icons/hit.svg");
+  back
 }

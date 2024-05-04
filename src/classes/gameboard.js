@@ -70,7 +70,7 @@ export default class GameBoard {
       let x;
       let y;
       let isHorizontal;
-      let attemptCount = 0; // Track the number of attempts
+      let attemptCount = 0;
       const maxAttempts = 100;
       while (!successfulPlacing && attemptCount < maxAttempts) {
         isHorizontal = Math.random() < 0.5;
@@ -81,15 +81,13 @@ export default class GameBoard {
           y = Math.floor(Math.random() * this.size);
           x = Math.floor(Math.random() * (this.size - ship.length + 1));
         }
+
         if (this.placeShip(ship.getId(), x, y, isHorizontal)) {
           successfulPlacing = true;
         }
         attemptCount++;
       }
       if (!successfulPlacing) {
-        console.log(
-          `Failed to place ship ${ship.getId()} after ${maxAttempts} attempts.`,
-        );
         this.placeShipsRandomly();
       }
       this.placedShips.add(ship.getId());
@@ -253,7 +251,6 @@ export default class GameBoard {
   }
 
   hasDiagonalNeighbors(shipLength, x, y, isHorizontal) {
-    console.log(`Before test: ${x}, ${y}`);
     if (x > 0 && y > 0 && this.board[x - 1][y - 1].ship !== null) return true; // top left diagonal
     if (!isHorizontal) {
       if (
@@ -285,8 +282,6 @@ export default class GameBoard {
       )
         return true; // bottom right diagonal
     }
-
-    console.log(`Success of ${x}, ${y}`);
     return false;
   }
 }

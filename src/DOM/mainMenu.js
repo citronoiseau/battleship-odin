@@ -1,3 +1,5 @@
+import { registerHit } from "../modules/controller";
+
 const content = document.querySelector("#content");
 
 function handleClick(row, column) {
@@ -29,18 +31,14 @@ function createGameBoard(typeofPlayer, parent) {
   parent.appendChild(gameboardContainer);
 }
 
-function clearBoard(board) {
-  const cells = board.querySelectorAll(".cell");
-  cells.forEach((cell) => {
-    if (cell.classList.contains("ship")) {
-      cell.classList.remove("ship");
-    }
-  });
-}
-
 export function renderBoard(board, typeOfPlayer) {
   const domBoard = document.getElementById(`${typeOfPlayer}board`);
-  clearBoard(domBoard);
+
+  const cells = domBoard.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    cell.removeEventListener("click", handleClick);
+  });
+
   for (let i = 0; i < board.size; i++) {
     for (let j = 0; j < board.size; j++) {
       const cell = domBoard.querySelector(
@@ -48,10 +46,22 @@ export function renderBoard(board, typeOfPlayer) {
       );
       if (board.board[i][j].ship) {
         cell.classList.add("ship");
+      } else {
+        cell.classList.remove("ship");
       }
       if (board.board[i][j].hit) {
         cell.classList.add("hit");
+      } else {
+        cell.classList.remove("hit");
       }
+      cell.addEventListener("click", () => {
+        if (
+          !cell.classList.contains("hit") &&
+          !cell.classList.contains("human")
+        ) {
+          registerHit(cell, board, typeOfPlayer);
+        }
+      });
     }
   }
 }
@@ -61,11 +71,14 @@ export function mainMenu() {
   gameContainer.classList.add("gameContainer");
 
   content.appendChild(gameContainer);
-  createGameBoard("player", gameContainer);
+  createGameBoard("human", gameContainer);
   createGameBoard("computer", gameContainer);
-  const playerBoardContainer = document.getElementById("playerBoardContainer");
+  const humanBoardContainer = document.getElementById("humanBoardContainer");
   const randomizeButton = document.createElement("button");
   randomizeButton.id = "randomButton";
-  playerBoardContainer.appendChild(randomizeButton);
+  humanBoardContainer.appendChild(randomizeButton);
   randomizeButton.textContent = "Randomize ships!";
+  // randomizeButton.addEventListener("click", () => {
+  //   randomizeShips(controller.players[1].board, "human");
+  // });
 }

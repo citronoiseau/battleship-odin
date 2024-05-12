@@ -1,12 +1,7 @@
 import Player from "../classes/player";
-import { renderBoard } from "../DOM/mainMenu";
+import { renderBoard } from "../DOM/boardDOM";
 
-export function randomizeShips(board, typeOfPlayer) {
-  board.placeShipsRandomly();
-  renderBoard(board, typeOfPlayer);
-}
-
-const handlePlayers = (function () {
+export const handlePlayers = (function () {
   let computerPlayer = null;
   let humanPlayer = null;
   let activePlayer = null;
@@ -36,10 +31,10 @@ const handlePlayers = (function () {
 
 const handleRounds = (function () {
   let isWin = false;
+
   const playComputerRound = function () {
     if (!isWin) {
       const waitingPlayer = handlePlayers.getWaitingPlayer();
-      console.log(waitingPlayer);
       const x = Math.floor(Math.random() * 10);
       const y = Math.floor(Math.random() * 10);
       if (!waitingPlayer.board.board[x][y].hit) {
@@ -66,17 +61,19 @@ const handleRounds = (function () {
   return { playComputerRound, checkWin, registerWin };
 })();
 
-export function registerHit(cell, board, typeOfPlayer) {
+export function registerPlayerHit(cell) {
+  const computer = handlePlayers.getWaitingPlayer();
+  const computerBoard = computer.board;
   if (!handleRounds.checkWin()) {
     const x = parseInt(cell.getAttribute("data-row"), 10);
     const y = parseInt(cell.getAttribute("data-column"), 10);
-    board.receiveAttack(x, y);
-    if (board.areAllShipsSunk()) {
+    computerBoard.receiveAttack(x, y);
+    if (computerBoard.areAllShipsSunk()) {
       handleRounds.registerWin();
       console.log("Player won!");
     }
     handlePlayers.switchTurn();
-    renderBoard(board, typeOfPlayer);
+    renderBoard(computerBoard, "computer");
 
     if (handlePlayers.getActivePlayer().type === "computer") {
       handleRounds.playComputerRound();
@@ -84,10 +81,17 @@ export function registerHit(cell, board, typeOfPlayer) {
   }
 }
 
+export function randomizeShips(board, typeOfPlayer) {
+  board.placeShipsRandomly();
+
+  renderBoard(board, typeOfPlayer);
+}
+
 export const gameController = function () {
   const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
-  randomizeShips(humanPlayer.board, "human");
+
   randomizeShips(computerPlayer.board, "computer");
 
+  // randomizeShips(humanPlayer.board, "human");
   return {};
 };

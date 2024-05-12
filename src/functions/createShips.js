@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import Ship from "../classes/ship";
 
 export function createPatrolBoats() {

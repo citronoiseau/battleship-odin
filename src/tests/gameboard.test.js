@@ -2,7 +2,7 @@
 import GameBoard from "../classes/gameboard";
 
 const testingGameBoard = new GameBoard();
-
+testingGameBoard.ships = testingGameBoard.initializeShips();
 // ship placing tests
 
 test("Gameboard is placing horizontal ship(length 2) in top-left corner", () => {

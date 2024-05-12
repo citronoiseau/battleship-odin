@@ -11,7 +11,7 @@ export default class GameBoard {
   constructor() {
     this.size = 10;
     this.board = this.initializeBoard();
-    this.ships = this.initializeShips();
+    this.ships = [];
     this.placedShips = new Set();
     this.missedHits = 0;
   }
@@ -49,7 +49,7 @@ export default class GameBoard {
 
   restartBoard() {
     this.board = this.initializeBoard();
-    this.ships = this.initializeShips();
+    this.ships = [];
     this.placedShips = new Set();
     this.missedHits = 0;
   }
@@ -64,6 +64,7 @@ export default class GameBoard {
 
   placeShipsRandomly() {
     this.restartBoard();
+    this.ships = this.initializeShips();
     const randomizedShips = shuffleArray(this.ships);
     randomizedShips.forEach((ship) => {
       let successfulPlacing = false;
@@ -81,7 +82,6 @@ export default class GameBoard {
           y = Math.floor(Math.random() * this.size);
           x = Math.floor(Math.random() * (this.size - ship.length + 1));
         }
-
         if (this.placeShip(ship.getId(), x, y, isHorizontal)) {
           successfulPlacing = true;
         }
@@ -94,12 +94,16 @@ export default class GameBoard {
     });
   }
 
-  placeShip(shipId, x, y, isHorizontal) {
+  placeShip(shipId, x, y, isHorizontal, length) {
+    let shipLength;
     const newShip = this.ships.find(
       (neededShip) => neededShip.getId() === shipId,
     );
-
-    const shipLength = newShip.length;
+    if (newShip) {
+      shipLength = newShip.length;
+    } else {
+      shipLength = length;
+    }
     if (this.checkAvailability(shipId, shipLength, x, y, isHorizontal)) {
       if (isHorizontal) {
         for (let i = 0; i <= shipLength - 1; i++) {

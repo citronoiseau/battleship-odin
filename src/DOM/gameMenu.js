@@ -18,7 +18,6 @@ export default function gameMenu() {
         !cell.classList.contains("hit") &&
         !cell.classList.contains("human")
       ) {
-        console.log(computerBoard);
         registerPlayerHit(cell);
       }
     });

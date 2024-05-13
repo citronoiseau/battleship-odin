@@ -81,12 +81,28 @@ export function registerPlayerHit(cell) {
   }
 }
 
+export function placePlayerShip(shipId, x, y, isHorizontal, length) {
+  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
+  const humanPlayerBoard = humanPlayer.board;
+
+  humanPlayerBoard.createShip(shipId, length);
+  const placed = humanPlayerBoard.placeShip(shipId, x, y, isHorizontal);
+  if (placed) {
+    renderBoard(humanPlayerBoard, "human");
+    return true;
+  }
+}
+
 export function randomizeShips(board, typeOfPlayer) {
   board.placeShipsRandomly();
 
   renderBoard(board, typeOfPlayer);
 }
 
+export function clearBoard(board, typeOfPlayer) {
+  board.restartBoard();
+  renderBoard(board, typeOfPlayer);
+}
 export const gameController = function () {
   const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
 

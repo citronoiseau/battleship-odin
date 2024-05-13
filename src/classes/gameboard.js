@@ -6,6 +6,7 @@ import {
   createBattleShips,
 } from "../functions/createShips";
 import shuffleArray from "../functions/shuffleArr";
+import Ship from "./ship";
 
 export default class GameBoard {
   constructor() {
@@ -54,6 +55,11 @@ export default class GameBoard {
     this.missedHits = 0;
   }
 
+  createShip(shipId, length) {
+    const newShip = new Ship(length, shipId);
+    this.ships.push(newShip);
+  }
+
   getShip(x, y) {
     if (this.board[x][y].ship !== null) {
       const neededShip = this.board[x][y].ship;
@@ -94,16 +100,12 @@ export default class GameBoard {
     });
   }
 
-  placeShip(shipId, x, y, isHorizontal, length) {
-    let shipLength;
+  placeShip(shipId, x, y, isHorizontal) {
     const newShip = this.ships.find(
       (neededShip) => neededShip.getId() === shipId,
     );
-    if (newShip) {
-      shipLength = newShip.length;
-    } else {
-      shipLength = length;
-    }
+    const shipLength = newShip.length;
+
     if (this.checkAvailability(shipId, shipLength, x, y, isHorizontal)) {
       if (isHorizontal) {
         for (let i = 0; i <= shipLength - 1; i++) {

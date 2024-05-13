@@ -1,9 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+.title {
+  font-family: "Luckiest Guy", cursive;
+  font-size: 50px;
+  color: #3c2803;
+}
+
+.selectionBoard {
+  display: flex;
+  gap: 10px;
+}
+
+.shipContainer > div.rotated {
+  display: flex;
+}
+.shipContainer > div.hidden {
+  display: none;
+}
 .gameContainer {
   margin-top: 50px;
   justify-content: center;
@@ -16,31 +35,48 @@
   margin: 20px;
 }
 .gameboard {
+  max-width: 400px;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
 }
 
-.cell {
+.cell,
+.shipPart {
   width: 40px;
   height: 40px;
   background-color: #e0e0e0;
-  border: 1px solid #ccc;
+  border: 1px solid #c2c2c2;
 }
-
+.shipPart {
+  background-color: #5f5f5f;
+  border: 1px solid #c2c2c2;
+}
 .cell:hover {
   background-color: #cfcfcf;
   transition: all 0.1s ease-out;
 }
 
-.cell.player.ship {
+.cell.human.ship {
   background-color: #202020;
+  border: 1px solid #202020;
 }
-.cell.computer.ship {
-  background-color: #6b0000;
+.cell.human.ship.hit {
+  background-color: #f95e5e;
+  border: 1px solid #f95e5e;
 }
 .hit {
   pointer-events: none;
   background-image: url("icons/hit.svg");
-  back
+}
+.cell.computer.ship.hit {
+  background-color: #006e1a;
+  border: 1px solid #006e1a;
+}
+.cell.dragging {
+  border: 2px dashed #000;
+  opacity: 0.8;
+}
+.highlighted {
+  background-color: lightblue;
 }

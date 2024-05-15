@@ -1,5 +1,5 @@
-import { mainMenu } from "./DOM/mainMenu";
+import playerMenu from "./DOM/playerMenu";
 
 export default function pageLoader() {
-  mainMenu();
+  playerMenu();
 }

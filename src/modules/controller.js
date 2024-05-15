@@ -1,5 +1,6 @@
 import Player from "../classes/player";
 import { renderBoard } from "../DOM/boardDOM";
+import changeScreens from "../DOM/screenChanger";
 
 export const handlePlayers = (function () {
   let computerPlayer = null;
@@ -84,18 +85,15 @@ export function registerPlayerHit(cell) {
 export function placePlayerShip(shipId, x, y, isHorizontal, length) {
   const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
   const humanPlayerBoard = humanPlayer.board;
-
   humanPlayerBoard.createShip(shipId, length);
   const placed = humanPlayerBoard.placeShip(shipId, x, y, isHorizontal);
   if (placed) {
     renderBoard(humanPlayerBoard, "human");
-    return true;
   }
 }
 
 export function randomizeShips(board, typeOfPlayer) {
   board.placeShipsRandomly();
-
   renderBoard(board, typeOfPlayer);
 }
 
@@ -103,11 +101,23 @@ export function clearBoard(board, typeOfPlayer) {
   board.restartBoard();
   renderBoard(board, typeOfPlayer);
 }
+
+export function restartGame() {
+  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
+  clearBoard(humanPlayer.board, "human");
+  clearBoard(computerPlayer.board, "computer");
+  changeScreens(false);
+}
+
 export const gameController = function () {
   const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
+  const humanShips = humanPlayer.board.ships;
+  console.log(humanShips);
+  if (humanShips.length === 10) {
+    changeScreens(true);
+    randomizeShips(computerPlayer.board, "computer");
+    renderBoard(humanPlayer.board, "human");
+  }
 
-  randomizeShips(computerPlayer.board, "computer");
-
-  // randomizeShips(humanPlayer.board, "human");
   return {};
 };

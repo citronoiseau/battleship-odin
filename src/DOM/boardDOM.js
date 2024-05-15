@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 export function createGameBoard(typeofPlayer, parent) {
   const gameboardContainer = document.createElement("div");
   gameboardContainer.id = `${typeofPlayer}BoardContainer`;

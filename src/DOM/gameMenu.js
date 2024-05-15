@@ -1,5 +1,6 @@
 import { registerPlayerHit } from "../modules/controller";
 import { createGameBoard } from "./boardDOM";
+import { createRestartGameButton } from "./createButtons";
 
 const content = document.querySelector("#content");
 
@@ -22,4 +23,10 @@ export default function gameMenu() {
       }
     });
   });
+
+  const restartGameButtonContainer = document.createElement("div");
+  createRestartGameButton(restartGameButtonContainer);
+
+  gameContainer.appendChild(restartGameButtonContainer);
+  return gameContainer;
 }

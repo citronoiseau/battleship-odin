@@ -56,8 +56,10 @@ export default class GameBoard {
   }
 
   createShip(shipId, length) {
-    const newShip = new Ship(length, shipId);
-    this.ships.push(newShip);
+    if (!this.ships.find((neededShip) => neededShip.getId() === shipId)) {
+      const newShip = new Ship(length, shipId);
+      this.ships.push(newShip);
+    }
   }
 
   getShip(x, y) {

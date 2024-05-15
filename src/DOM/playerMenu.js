@@ -1,4 +1,8 @@
-import { createRandomizeButton, createClearButton } from "./createButtons";
+import {
+  createRandomizeButton,
+  createClearButton,
+  createStartGameButton,
+} from "./createButtons";
 import { createGameBoard } from "./boardDOM";
 import { placePlayerShip } from "../modules/controller";
 
@@ -109,6 +113,9 @@ function restartShips() {
 }
 
 export default function playerMenu() {
+  const playerMenuContainer = document.createElement("div");
+  content.appendChild(playerMenuContainer);
+
   const titleContainer = document.createElement("div");
 
   const title = document.createElement("div");
@@ -116,11 +123,11 @@ export default function playerMenu() {
   title.textContent = "PaperBoats";
   titleContainer.appendChild(title);
 
-  content.appendChild(titleContainer);
+  playerMenuContainer.appendChild(titleContainer);
 
   const choosingBoards = document.createElement("div");
   choosingBoards.classList.add("choosingBoards");
-  content.appendChild(choosingBoards);
+  playerMenuContainer.appendChild(choosingBoards);
 
   const selectionBoard = document.createElement("div");
   selectionBoard.classList.add("selectionBoard");
@@ -142,9 +149,14 @@ export default function playerMenu() {
 
   const clearButtonContainer = document.createElement("div");
   const clearButton = createClearButton(clearButtonContainer);
-  console.log(clearButton);
   clearButton.addEventListener("click", restartShips);
+
+  const startGameButtonContainer = document.createElement("div");
+  createStartGameButton(startGameButtonContainer);
 
   choosingBoards.appendChild(deleteButtonContainer);
   choosingBoards.appendChild(clearButtonContainer);
+  choosingBoards.appendChild(startGameButtonContainer);
+
+  return playerMenuContainer;
 }

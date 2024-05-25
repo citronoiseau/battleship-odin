@@ -28,7 +28,12 @@ export const handlePlayers = (function () {
 
   initializePlayers();
 
-  return { getPlayers, getActivePlayer, switchTurn, getWaitingPlayer };
+  return {
+    getPlayers,
+    getActivePlayer,
+    switchTurn,
+    getWaitingPlayer,
+  };
 })();
 
 const handleRounds = (function () {
@@ -44,7 +49,11 @@ const handleRounds = (function () {
   const registerWin = function () {
     isWin = true;
   };
-  return { checkWin, registerWin };
+
+  const restartRounds = function () {
+    isWin = false;
+  };
+  return { checkWin, registerWin, restartRounds };
 })();
 
 const smartComputer = (function () {
@@ -154,14 +163,16 @@ const smartComputer = (function () {
       restartComputerMemory();
       return randomizeCoords();
     }
-    if (computerMemory.hitStack.length > 0 || computerMemory.initialX) {
-      if (computerMemory.initialX && !computerMemory.isLastHit) {
+    if (
+      computerMemory.hitStack.length > 0 ||
+      computerMemory.initialX !== null
+    ) {
+      if (computerMemory.initialX !== null && !computerMemory.isLastHit) {
         lastX = computerMemory.initialX;
         lastY = computerMemory.initialY;
       } else {
         ({ x: lastX, y: lastY } = computerMemory.hitStack.pop());
       }
-
       if (!computerMemory.direction) {
         computerMemory.direction = getRandomDirection();
         computerMemory.directionsTried = {
@@ -186,21 +197,19 @@ const smartComputer = (function () {
         computerMemory.directionsTried[computerMemory.direction] = true;
         if (getNextDirection(computerMemory.direction)) {
           computerMemory.direction = getNextDirection(computerMemory.direction);
-        } else {
-          restartComputerMemory();
-          return randomizeCoords();
-        }
-        if (x < 0 || x > 9 || y < 0 || y > 9) {
+
           ({ x, y } = getAdjacentCell(
             computerMemory.initialX,
             computerMemory.initialY,
             computerMemory.direction,
           ));
         } else {
-          ({ x, y } = getAdjacentCell(lastX, lastY, computerMemory.direction));
+          restartComputerMemory();
+          return randomizeCoords();
         }
       }
     } else {
+      restartComputerMemory();
       [x, y] = randomizeCoords();
     }
     return [x, y];
@@ -218,7 +227,7 @@ const smartComputer = (function () {
 
       if (waitingPlayer.board.board[x][y].ship) {
         computerMemory.hitStack.push({ x, y });
-        if (!computerMemory.initialX) {
+        if (computerMemory.initialX === null) {
           computerMemory.initialX = x;
           computerMemory.initialY = y;
         }
@@ -226,6 +235,9 @@ const smartComputer = (function () {
         computerMemory.isLastHit = true;
       } else {
         computerMemory.isLastHit = false;
+        if (computerMemory.direction) {
+          computerMemory.directionsTried[computerMemory.direction] = true;
+        }
       }
 
       if (waitingPlayer.board.areAllShipsSunk()) {
@@ -252,6 +264,7 @@ export function registerPlayerHit(cell) {
     computerBoard.receiveAttack(x, y);
     if (computerBoard.areAllShipsSunk()) {
       handleRounds.registerWin();
+      renderBoard(computerBoard, "computer");
       changeMessage(`${handlePlayers.getActivePlayer().type} won!`);
       return;
     }
@@ -290,7 +303,11 @@ export function restartGame() {
   clearBoard(humanPlayer.board, "human");
   clearBoard(computerPlayer.board, "computer");
   changeScreens(false);
+  handleRounds.restartRounds();
   smartComputer.restartComputerMemory(true);
+  if (handlePlayers.activePlayer === "computer") {
+    handlePlayers.switchTurn();
+  }
 }
 
 export const gameController = function () {

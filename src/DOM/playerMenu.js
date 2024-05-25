@@ -3,6 +3,7 @@ import {
   createClearButton,
   createStartGameButton,
 } from "./createButtons";
+
 import { createGameBoard } from "./boardDOM";
 import { placePlayerShip } from "../modules/controller";
 
@@ -112,6 +113,13 @@ function restartShips() {
   createShips();
 }
 
+function hideShips() {
+  const ships = document.querySelectorAll(".ship");
+  ships.forEach((ship) => {
+    ship.classList.add("hidden");
+  });
+}
+
 export default function playerMenu() {
   const playerMenuContainer = document.createElement("div");
   content.appendChild(playerMenuContainer);
@@ -145,7 +153,8 @@ export default function playerMenu() {
   choosingBoards.appendChild(playerBoard);
 
   const deleteButtonContainer = document.createElement("div");
-  createRandomizeButton(deleteButtonContainer);
+  const randomizeButton = createRandomizeButton(deleteButtonContainer);
+  randomizeButton.addEventListener("click", hideShips);
 
   const clearButtonContainer = document.createElement("div");
   const clearButton = createClearButton(clearButtonContainer);

@@ -17,6 +17,8 @@ export function createRandomizeButton(parent) {
   randomizeButton.addEventListener("click", () => {
     randomizeShips(humanPlayer.board, "human");
   });
+
+  return randomizeButton;
 }
 
 export function createClearButton(parent) {

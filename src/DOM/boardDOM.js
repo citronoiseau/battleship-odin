@@ -8,17 +8,42 @@ export function createGameBoard(typeofPlayer, parent) {
   gameboard.id = `${typeofPlayer}board`;
   gameboardContainer.appendChild(gameboard);
 
+  const numberContainerX = document.createElement("div");
+  numberContainerX.classList.add("numberContainerX");
+  gameboard.appendChild(numberContainerX);
+  for (let i = 0; i < 10; i++) {
+    const numberCell = document.createElement("div");
+    numberCell.textContent = i;
+    numberCell.classList.add("number-cell");
+    numberContainerX.appendChild(numberCell);
+  }
+
+  const numberContainerY = document.createElement("div");
+  numberContainerY.classList.add("numberContainerY");
+  gameboard.appendChild(numberContainerY);
+  for (let i = 0; i < 10; i++) {
+    const numberCell = document.createElement("div");
+    numberCell.textContent = i;
+    numberCell.classList.add("number-cell");
+    numberContainerY.appendChild(numberCell);
+  }
+
+  const cells = document.createElement("div");
+  cells.classList.add("cells");
+  gameboard.appendChild(cells);
+
   for (let i = 0; i < 10; i++) {
     for (let j = 0; j < 10; j++) {
       const cell = document.createElement("div");
       cell.textContent = "";
       cell.dataset.row = i;
       cell.dataset.column = j;
-      gameboard.appendChild(cell);
+      cells.appendChild(cell);
       cell.classList.add("cell");
       cell.classList.add(`${typeofPlayer}`);
     }
   }
+
   parent.appendChild(gameboardContainer);
   return gameboardContainer;
 }

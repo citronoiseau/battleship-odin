@@ -67,8 +67,13 @@ const smartComputer = (function () {
     isLastHit: false,
     numberOfHits: 0,
     neighborCells: new Set(),
+    shipCounters: {
+      5: 1,
+      4: 2,
+      3: 3,
+      2: 4,
+    },
   };
-  const directions = ["up", "right", "down", "left"];
 
   const restartComputerMemory = function (fullRestart = false) {
     computerMemory.hitStack = [];
@@ -81,6 +86,12 @@ const smartComputer = (function () {
     computerMemory.numberOfHits = 0;
     if (fullRestart) {
       computerMemory.neighborCells = new Set();
+      computerMemory.shipCounters = {
+        5: 1,
+        4: 2,
+        3: 3,
+        2: 4,
+      };
     }
   };
 
@@ -100,6 +111,7 @@ const smartComputer = (function () {
   };
 
   const isValidCell = (x, y) => x >= 0 && x < 10 && y >= 0 && y < 10;
+  const directions = ["up", "right", "down", "left"];
 
   const getRandomDirection = function () {
     const randomIndex = Math.floor(Math.random() * directions.length);
@@ -143,6 +155,26 @@ const smartComputer = (function () {
     return false;
   };
 
+  function updateShipCounter(shipLength) {
+    if (computerMemory.shipCounters[shipLength] > 0) {
+      computerMemory.shipCounters[shipLength]--;
+    }
+    console.log(
+      `Remaining ${shipLength}-cell ships: ${computerMemory.shipCounters[shipLength]}`,
+    );
+  }
+  function getNextLargestShipLength() {
+    const shipLengths = Object.keys(computerMemory.shipCounters)
+      .map(Number)
+      .sort((a, b) => b - a);
+    for (const length of shipLengths) {
+      if (computerMemory.shipCounters[length] > 0) {
+        return length;
+      }
+    }
+    return null;
+  }
+
   const randomizeCoords = function () {
     const waitingPlayer = handlePlayers.getWaitingPlayer();
     const x = Math.floor(Math.random() * 10);
@@ -158,8 +190,10 @@ const smartComputer = (function () {
     let y;
     let lastX;
     let lastY;
+    const maxShipLength = getNextLargestShipLength();
     const waitingPlayer = handlePlayers.getWaitingPlayer();
-    if (computerMemory.numberOfHits === 5) {
+    if (computerMemory.numberOfHits === maxShipLength) {
+      updateShipCounter(maxShipLength);
       restartComputerMemory();
       return randomizeCoords();
     }
@@ -204,6 +238,7 @@ const smartComputer = (function () {
             computerMemory.direction,
           ));
         } else {
+          updateShipCounter(computerMemory.numberOfHits);
           restartComputerMemory();
           return randomizeCoords();
         }

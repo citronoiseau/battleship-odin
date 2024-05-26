@@ -145,6 +145,9 @@ export default function playerMenu() {
   const playerBoard = createGameBoard("human", choosingBoards);
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
+    cell.addEventListener("dragstart", (event) => {
+      event.preventDefault();
+    });
     cell.addEventListener("dragover", handleDragOver);
     cell.addEventListener("dragleave", handleDragLeave);
     cell.addEventListener("drop", handleDrop);

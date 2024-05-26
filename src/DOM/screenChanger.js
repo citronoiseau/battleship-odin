@@ -1,4 +1,4 @@
-import gameMenu from "./gameMenu";
+import { gameMenu } from "./gameMenu";
 import playerMenu from "./playerMenu";
 
 const content = document.querySelector("#content");

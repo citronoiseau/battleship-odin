@@ -157,22 +157,19 @@ const smartComputer = (function () {
 
   function updateShipCounter(shipLength) {
     if (computerMemory.shipCounters[shipLength] > 0) {
-      computerMemory.shipCounters[shipLength]--;
+      computerMemory.shipCounters[shipLength] -= 1;
     }
-    console.log(
-      `Remaining ${shipLength}-cell ships: ${computerMemory.shipCounters[shipLength]}`,
-    );
   }
   function getNextLargestShipLength() {
     const shipLengths = Object.keys(computerMemory.shipCounters)
       .map(Number)
       .sort((a, b) => b - a);
-    for (const length of shipLengths) {
-      if (computerMemory.shipCounters[length] > 0) {
-        return length;
-      }
-    }
-    return null;
+
+    const nextLargestLength = shipLengths.find(
+      (length) => computerMemory.shipCounters[length] > 0,
+    );
+
+    return nextLargestLength !== undefined ? nextLargestLength : null;
   }
 
   const randomizeCoords = function () {
@@ -313,7 +310,7 @@ export function registerPlayerHit(cell) {
 }
 
 export function placePlayerShip(shipId, x, y, isHorizontal, length) {
-  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
+  const [humanPlayer] = handlePlayers.getPlayers();
   const humanPlayerBoard = humanPlayer.board;
   humanPlayerBoard.createShip(shipId, length);
   const placed = humanPlayerBoard.placeShip(shipId, x, y, isHorizontal);
@@ -321,6 +318,7 @@ export function placePlayerShip(shipId, x, y, isHorizontal, length) {
     renderBoard(humanPlayerBoard, "human");
     return true;
   }
+  return false;
 }
 
 export function randomizeShips(board, typeOfPlayer) {

@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import Player from "../classes/player";
 import { renderBoard } from "../DOM/boardDOM";
 import changeScreens from "../DOM/screenChanger";
@@ -111,6 +112,9 @@ const smartComputer = (function () {
   };
 
   const isValidCell = (x, y) => x >= 0 && x < 10 && y >= 0 && y < 10;
+
+  // directions
+
   const directions = ["up", "right", "down", "left"];
 
   const getRandomDirection = function () {
@@ -155,6 +159,8 @@ const smartComputer = (function () {
     return false;
   };
 
+  // reducing amount of unsuccessful hits
+
   function updateShipCounter(shipLength) {
     if (computerMemory.shipCounters[shipLength] > 0) {
       computerMemory.shipCounters[shipLength] -= 1;
@@ -172,11 +178,75 @@ const smartComputer = (function () {
     return nextLargestLength !== undefined ? nextLargestLength : null;
   }
 
+  function checkCell(x, y) {
+    const key = `${x},${y}`;
+    return computerMemory.neighborCells.has(key);
+  }
+
+  function addCell(x, y) {
+    const key = `${x},${y}`;
+    computerMemory.neighborCells.add(key);
+  }
+
+  function checkoutNeighbourCells(x, y, direction, shipLength) {
+    if (direction === "right") {
+      for (let i = -1; i <= 1; i++) {
+        for (let j = 0; j <= shipLength + 1; j++) {
+          const saveX = x + i;
+          const saveY = y + j;
+          addCell(saveX, saveY);
+        }
+      }
+    }
+    if (direction === "down") {
+      for (let i = -1; i <= 1; i++) {
+        for (let j = 0; j <= shipLength + 1; j++) {
+          const saveX = x + j;
+          const saveY = y + i;
+
+          addCell(saveX, saveY);
+        }
+      }
+    }
+    console.log(computerMemory.neighborCells);
+  }
+
+  function findFirstShipCell(x, y, shipLength, isHorizontal) {
+    const waitingPlayer = handlePlayers.getWaitingPlayer();
+
+    if (isHorizontal) {
+      for (let i = 1; i <= shipLength; i++) {
+        const firstY = y - i;
+        if (firstY < 0 || firstY > 9) {
+          checkoutNeighbourCells(x, firstY, "right", shipLength);
+          return;
+        }
+        if (!waitingPlayer.board.board[x][firstY].ship) {
+          checkoutNeighbourCells(x, firstY, "right", shipLength);
+          return;
+        }
+      }
+    } else {
+      for (let i = 1; i <= shipLength; i++) {
+        const firstX = x - i;
+        if (firstX < 0 || firstX > 9) {
+          checkoutNeighbourCells(firstX, y, "down", shipLength);
+          return;
+        }
+        if (!waitingPlayer.board.board[firstX][y].ship) {
+          checkoutNeighbourCells(firstX, y, "down", shipLength);
+          return;
+        }
+      }
+    }
+  }
+
   const randomizeCoords = function () {
     const waitingPlayer = handlePlayers.getWaitingPlayer();
     const x = Math.floor(Math.random() * 10);
     const y = Math.floor(Math.random() * 10);
-    if (!waitingPlayer.board.board[x][y].hit) {
+
+    if (!waitingPlayer.board.board[x][y].hit && !checkCell(x, y)) {
       return [x, y];
     }
     return randomizeCoords();
@@ -190,7 +260,15 @@ const smartComputer = (function () {
     const maxShipLength = getNextLargestShipLength();
     const waitingPlayer = handlePlayers.getWaitingPlayer();
     if (computerMemory.numberOfHits === maxShipLength) {
+      ({ x: lastX, y: lastY } = computerMemory.hitStack.pop());
+
       updateShipCounter(maxShipLength);
+      findFirstShipCell(
+        lastX,
+        lastY,
+        computerMemory.numberOfHits,
+        computerMemory.isShipHorizontal,
+      );
       restartComputerMemory();
       return randomizeCoords();
     }
@@ -223,7 +301,8 @@ const smartComputer = (function () {
       while (
         !isValidCell(x, y) ||
         waitingPlayer.board.board[x][y].hit ||
-        computerMemory.directionsTried[computerMemory.direction]
+        computerMemory.directionsTried[computerMemory.direction] ||
+        checkCell(x, y)
       ) {
         computerMemory.directionsTried[computerMemory.direction] = true;
         if (getNextDirection(computerMemory.direction)) {
@@ -236,6 +315,12 @@ const smartComputer = (function () {
           ));
         } else {
           updateShipCounter(computerMemory.numberOfHits);
+          findFirstShipCell(
+            lastX,
+            lastY,
+            computerMemory.numberOfHits,
+            computerMemory.isShipHorizontal,
+          );
           restartComputerMemory();
           return randomizeCoords();
         }

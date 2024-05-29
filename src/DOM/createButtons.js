@@ -12,10 +12,10 @@ export function createRandomizeButton(parent) {
   parent.appendChild(randomizeButton);
   randomizeButton.textContent = "Randomize ships!";
 
-  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
-
+  const players = handlePlayers.getPlayers();
+  const humanPlayer = players[0];
   randomizeButton.addEventListener("click", () => {
-    randomizeShips(humanPlayer.board, "human");
+    randomizeShips(humanPlayer.board, humanPlayer.type);
   });
 
   return randomizeButton;
@@ -30,7 +30,7 @@ export function createClearButton(parent) {
   const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
 
   clearButton.addEventListener("click", () => {
-    clearBoard(humanPlayer.board, "human");
+    clearBoard(humanPlayer.board, humanPlayer.type);
   });
   return clearButton;
 }
@@ -45,6 +45,18 @@ export function createStartGameButton(parent) {
     gameController();
   });
   return startGameButton;
+}
+
+export function createInitializeGameButton(parent) {
+  const initializeGameButton = document.createElement("button");
+  initializeGameButton.id = "initializeGameButton";
+  parent.appendChild(initializeGameButton);
+  initializeGameButton.textContent = "Start your game!";
+
+  initializeGameButton.addEventListener("click", () => {
+    gameController();
+  });
+  return initializeGameButton;
 }
 
 export function createRestartGameButton(parent) {

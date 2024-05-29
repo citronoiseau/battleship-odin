@@ -4,20 +4,66 @@ import { renderBoard } from "../DOM/boardDOM";
 import changeScreens from "../DOM/screenChanger";
 import { changeMessage } from "../DOM/gameMenu";
 
+export const gameParams = (function () {
+  let gameMode = "playerVsComputer";
+  let gameStyle = "oneByOne";
+
+  const changeGameMode = function () {
+    if (gameMode === "playerVsComputer") {
+      gameMode = "playerVsPlayer";
+    } else {
+      gameMode = "playerVsComputer";
+    }
+  };
+
+  const getGameMode = function () {
+    return gameMode;
+  };
+
+  const changeGameStyle = function () {
+    if (gameStyle === "oneByOne") {
+      gameStyle = "untilMiss";
+    } else {
+      gameStyle = "oneByOne";
+    }
+  };
+
+  const getGameStyle = function () {
+    return gameStyle;
+  };
+
+  return { changeGameMode, changeGameStyle, getGameMode, getGameStyle };
+})();
+
 export const handlePlayers = (function () {
-  let computerPlayer = null;
-  let humanPlayer = null;
+  const players = [];
+
   let activePlayer = null;
   let waitingPlayer = null;
 
-  const initializePlayers = function () {
-    computerPlayer = new Player("computer");
-    humanPlayer = new Player("human");
-    activePlayer = humanPlayer;
-    waitingPlayer = computerPlayer;
+  const initializePlayers = function (gameMode) {
+    players.length = 0;
+    if (gameMode === "playerVsComputer") {
+      const humanPlayer = new Player("human");
+      const computerPlayer = new Player("computer");
+
+      activePlayer = humanPlayer;
+      waitingPlayer = computerPlayer;
+      players.push(humanPlayer);
+      players.push(computerPlayer);
+    } else {
+      const humanPlayer = new Player("human");
+      const humanPlayer2 = new Player("human2");
+      activePlayer = humanPlayer;
+      waitingPlayer = humanPlayer2;
+      players.push(humanPlayer);
+      players.push(humanPlayer2);
+    }
   };
 
-  const getPlayers = () => [humanPlayer, computerPlayer];
+  const getPlayers = function () {
+    return players;
+  };
 
   const getActivePlayer = () => activePlayer;
 
@@ -27,34 +73,13 @@ export const handlePlayers = (function () {
     [activePlayer, waitingPlayer] = [waitingPlayer, activePlayer];
   };
 
-  initializePlayers();
-
   return {
     getPlayers,
     getActivePlayer,
     switchTurn,
     getWaitingPlayer,
+    initializePlayers,
   };
-})();
-
-const handleRounds = (function () {
-  let isWin = false;
-
-  const checkWin = function () {
-    if (isWin) {
-      return true;
-    }
-    return false;
-  };
-
-  const registerWin = function () {
-    isWin = true;
-  };
-
-  const restartRounds = function () {
-    isWin = false;
-  };
-  return { checkWin, registerWin, restartRounds };
 })();
 
 const smartComputer = (function () {
@@ -333,14 +358,14 @@ const smartComputer = (function () {
   };
 
   const playSmartComputerRound = function () {
-    if (!handleRounds.checkWin()) {
+    if (!handleRounds.getIsWin()) {
       const waitingPlayer = handlePlayers.getWaitingPlayer();
 
       const [x, y] = getCoords();
 
       waitingPlayer.board.receiveAttack(x, y);
 
-      renderBoard(waitingPlayer.board, "human");
+      renderBoard(waitingPlayer.board, waitingPlayer.type);
 
       if (waitingPlayer.board.board[x][y].ship) {
         computerMemory.hitStack.push({ x, y });
@@ -356,41 +381,94 @@ const smartComputer = (function () {
           computerMemory.directionsTried[computerMemory.direction] = true;
         }
       }
+      handleRounds.checkWin();
 
-      if (waitingPlayer.board.areAllShipsSunk()) {
-        changeMessage(`${handlePlayers.getActivePlayer().type} won!`);
-        handleRounds.registerWin();
-      }
-
-      handlePlayers.switchTurn();
+      handleRounds.switchTurn(x, y);
     }
   };
 
   return { playSmartComputerRound, restartComputerMemory };
 })();
 
+const handleRounds = (function () {
+  let isWin = false;
+
+  const getIsWin = function () {
+    if (isWin) {
+      return true;
+    }
+    return false;
+  };
+
+  const registerWin = function () {
+    isWin = true;
+  };
+
+  const restartRounds = function () {
+    isWin = false;
+  };
+
+  const checkWin = function () {
+    const waitingPlayer = handlePlayers.getWaitingPlayer();
+    if (waitingPlayer.board.areAllShipsSunk()) {
+      handleRounds.registerWin();
+      renderBoard(waitingPlayer.board, waitingPlayer.type);
+      changeMessage(`${handlePlayers.getActivePlayer().type} won!`);
+      return true;
+    }
+
+    return false;
+  };
+
+  const switchTurn = function (x, y) {
+    const waitingPlayer = handlePlayers.getWaitingPlayer();
+    const activePlayer = handlePlayers.getActivePlayer();
+    const gameStyle = gameParams.getGameStyle();
+    if (gameStyle === "oneByOne") {
+      handlePlayers.switchTurn();
+      renderBoard(waitingPlayer.board, waitingPlayer.type);
+      if (waitingPlayer.type === "computer") {
+        smartComputer.playSmartComputerRound();
+      }
+    }
+    if (gameStyle === "untilMiss") {
+      if (!waitingPlayer.board.board[x][y].ship) {
+        handlePlayers.switchTurn();
+        renderBoard(waitingPlayer.board, waitingPlayer.type);
+        if (waitingPlayer.type === "computer") {
+          smartComputer.playSmartComputerRound();
+          renderBoard(waitingPlayer.board, waitingPlayer.type);
+        }
+      }
+      if (waitingPlayer.board.board[x][y].ship) {
+        if (activePlayer.type === "computer") {
+          setTimeout(() => {
+            smartComputer.playSmartComputerRound();
+          }, 800);
+          renderBoard(waitingPlayer.board, waitingPlayer.type);
+        }
+      }
+    }
+    renderBoard(waitingPlayer.board, waitingPlayer.type);
+  };
+  return { getIsWin, switchTurn, checkWin, registerWin, restartRounds };
+})();
+
 export function registerPlayerHit(cell) {
-  if (handlePlayers.getActivePlayer().type === "computer") {
+  if (
+    handlePlayers.getActivePlayer().type === "computer" ||
+    handleRounds.getIsWin()
+  ) {
     return;
   }
-  const computer = handlePlayers.getWaitingPlayer();
-  const computerBoard = computer.board;
-  if (!handleRounds.checkWin()) {
+  const waitingPlayer = handlePlayers.getWaitingPlayer();
+  const waitingPlayerBoard = waitingPlayer.board;
+  if (!handleRounds.getIsWin()) {
     const x = parseInt(cell.getAttribute("data-row"), 10);
     const y = parseInt(cell.getAttribute("data-column"), 10);
-    computerBoard.receiveAttack(x, y);
-    if (computerBoard.areAllShipsSunk()) {
-      handleRounds.registerWin();
-      renderBoard(computerBoard, "computer");
-      changeMessage(`${handlePlayers.getActivePlayer().type} won!`);
-      return;
-    }
-    handlePlayers.switchTurn();
-    renderBoard(computerBoard, "computer");
-
-    if (handlePlayers.getActivePlayer().type === "computer") {
-      smartComputer.playSmartComputerRound();
-    }
+    waitingPlayerBoard.receiveAttack(x, y);
+    handleRounds.checkWin();
+    handleRounds.switchTurn(x, y);
   }
 }
 
@@ -400,7 +478,7 @@ export function placePlayerShip(shipId, x, y, isHorizontal, length) {
   humanPlayerBoard.createShip(shipId, length);
   const placed = humanPlayerBoard.placeShip(shipId, x, y, isHorizontal);
   if (placed) {
-    renderBoard(humanPlayerBoard, "human");
+    renderBoard(humanPlayerBoard, humanPlayer.type);
     return true;
   }
   return false;
@@ -416,11 +494,18 @@ export function clearBoard(board, typeOfPlayer) {
   renderBoard(board, typeOfPlayer);
 }
 
+export function initializeGame() {
+  const gameMode = gameParams.getGameMode();
+  const gameStyle = gameParams.getGameStyle();
+
+  handlePlayers.initializePlayers(gameMode);
+}
+
 export function restartGame() {
-  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
-  clearBoard(humanPlayer.board, "human");
-  clearBoard(computerPlayer.board, "computer");
-  changeScreens(false);
+  const [player1, player2] = handlePlayers.getPlayers();
+  clearBoard(player1.board, player1.type);
+  clearBoard(player2.board, player2.type);
+  changeScreens("choosing");
   handleRounds.restartRounds();
   smartComputer.restartComputerMemory(true);
   if (handlePlayers.activePlayer === "computer") {
@@ -429,12 +514,12 @@ export function restartGame() {
 }
 
 export const gameController = function () {
-  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
-  const humanShips = humanPlayer.board.ships;
+  const [player1, player2] = handlePlayers.getPlayers();
+  const humanShips = player1.board.ships;
   if (humanShips.length === 10) {
-    changeScreens(true);
-    randomizeShips(computerPlayer.board, "computer");
-    renderBoard(humanPlayer.board, "human");
+    changeScreens("playing");
+    randomizeShips(player2.board, player2.type);
+    renderBoard(player1.board, player1.type);
   }
 
   return {};

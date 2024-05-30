@@ -1,7 +1,6 @@
 /* eslint-disable no-plusplus */
 import Player from "../classes/player";
 import { renderBoard } from "../DOM/boardDOM";
-import changeScreens from "../DOM/screenChanger";
 import { changeMessage } from "../DOM/gameMenu";
 
 export const gameParams = (function () {
@@ -233,7 +232,6 @@ const smartComputer = (function () {
         }
       }
     }
-    console.log(computerMemory.neighborCells);
   }
 
   function findFirstShipCell(x, y, shipLength, isHorizontal) {
@@ -505,7 +503,6 @@ export function restartGame() {
   const [player1, player2] = handlePlayers.getPlayers();
   clearBoard(player1.board, player1.type);
   clearBoard(player2.board, player2.type);
-  changeScreens("choosing");
   handleRounds.restartRounds();
   smartComputer.restartComputerMemory(true);
   if (handlePlayers.activePlayer === "computer") {
@@ -517,7 +514,6 @@ export const gameController = function () {
   const [player1, player2] = handlePlayers.getPlayers();
   const humanShips = player1.board.ships;
   if (humanShips.length === 10) {
-    changeScreens("playing");
     randomizeShips(player2.board, player2.type);
     renderBoard(player1.board, player1.type);
   }

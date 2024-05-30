@@ -453,9 +453,14 @@ const handleRounds = (function () {
 })();
 
 export function registerPlayerHit(cell) {
+  const humanClass = Array.from(cell.classList).find((cls) =>
+    cls.startsWith("human"),
+  );
+  console.log(humanClass);
   if (
     handlePlayers.getActivePlayer().type === "computer" ||
-    handleRounds.getIsWin()
+    handleRounds.getIsWin() ||
+    handlePlayers.getActivePlayer().type === humanClass
   ) {
     return;
   }
@@ -470,13 +475,18 @@ export function registerPlayerHit(cell) {
   }
 }
 
-export function placePlayerShip(shipId, x, y, isHorizontal, length) {
-  const [humanPlayer] = handlePlayers.getPlayers();
-  const humanPlayerBoard = humanPlayer.board;
-  humanPlayerBoard.createShip(shipId, length);
-  const placed = humanPlayerBoard.placeShip(shipId, x, y, isHorizontal);
+export function placePlayerShip(shipId, x, y, isHorizontal, length, type) {
+  const [player1, player2] = handlePlayers.getPlayers();
+  const neededPlayer = [player1, player2].find(
+    (player) => player.type === type,
+  );
+
+  const playerBoard = neededPlayer.board;
+
+  playerBoard.createShip(shipId, length);
+  const placed = playerBoard.placeShip(shipId, x, y, isHorizontal);
   if (placed) {
-    renderBoard(humanPlayerBoard, humanPlayer.type);
+    renderBoard(playerBoard, neededPlayer.type);
     return true;
   }
   return false;
@@ -512,10 +522,19 @@ export function restartGame() {
 
 export const gameController = function () {
   const [player1, player2] = handlePlayers.getPlayers();
-  const humanShips = player1.board.ships;
-  if (humanShips.length === 10) {
-    randomizeShips(player2.board, player2.type);
-    renderBoard(player1.board, player1.type);
+  const ships1 = player1.board.ships;
+  const ships2 = player2.board.ships;
+  if (player2.type === "computer") {
+    if (ships1.length === 10) {
+      randomizeShips(player2.board, player2.type);
+      renderBoard(player1.board, player1.type);
+    }
+  }
+  if (player2.type === "human2") {
+    if (ships1.length === 10 && ships2.length === 10) {
+      renderBoard(player1.board, player1.type);
+      renderBoard(player2.board, player2.type);
+    }
   }
 
   return {};

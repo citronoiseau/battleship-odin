@@ -12,7 +12,7 @@ export function changeMessage(text) {
   message.textContent = text;
 }
 
-export function gameMenu() {
+export function gameMenu(twoPlayers) {
   const gameContainer = document.createElement("div");
   gameContainer.classList.add("gameContainer");
   content.appendChild(gameContainer);
@@ -30,19 +30,28 @@ export function gameMenu() {
   gameContainer.appendChild(boardsContainer);
 
   const playerBoard = createGameBoard("human", boardsContainer);
-  const computerBoard = createGameBoard("computer", boardsContainer);
-
-  const cells = document.querySelectorAll(".cell");
-  cells.forEach((cell) => {
-    cell.addEventListener("click", () => {
-      if (
-        !cell.classList.contains("hit") &&
-        !cell.classList.contains("human")
-      ) {
+  if (twoPlayers) {
+    const playerBoard2 = createGameBoard("human2", boardsContainer);
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.addEventListener("click", () => {
         registerPlayerHit(cell);
-      }
+      });
     });
-  });
+  } else {
+    const computerBoard = createGameBoard("computer", boardsContainer);
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.addEventListener("click", () => {
+        if (
+          !cell.classList.contains("hit") &&
+          !cell.classList.contains("human")
+        ) {
+          registerPlayerHit(cell);
+        }
+      });
+    });
+  }
 
   const restartGameButtonContainer = document.createElement("div");
   createRestartGameButton(restartGameButtonContainer);

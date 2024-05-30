@@ -5,7 +5,7 @@ export function createGameBoard(typeofPlayer, parent) {
   gameboardContainer.classList.add("gameboardContainer");
   const gameboard = document.createElement("div");
   gameboard.classList.add("gameboard");
-  gameboard.id = `${typeofPlayer}board`;
+  gameboard.id = `${typeofPlayer}`;
   gameboardContainer.appendChild(gameboard);
 
   const numberContainerX = document.createElement("div");
@@ -49,7 +49,7 @@ export function createGameBoard(typeofPlayer, parent) {
 }
 
 export function renderBoard(board, typeOfPlayer) {
-  const gameboard = document.getElementById(`${typeOfPlayer}board`);
+  const gameboard = document.getElementById(`${typeOfPlayer}`);
 
   for (let i = 0; i < board.size; i++) {
     for (let j = 0; j < board.size; j++) {

@@ -27,7 +27,12 @@ export function createInitializeGameButton(parent) {
 
   initializeGameButton.addEventListener("click", () => {
     initializeGame();
-    changeScreens("selecting");
+    const mode = gameParams.getGameMode();
+    if (mode === "playerVsPlayer") {
+      changeScreens("selecting", true);
+    } else {
+      changeScreens("selecting");
+    }
   });
   return initializeGameButton;
 }
@@ -76,9 +81,14 @@ export function createStartGameButton(parent) {
     parent,
     "Start your game!",
   );
-
+  const mode = gameParams.getGameMode();
   startGameButton.addEventListener("click", () => {
-    changeScreens("playing");
+    if (mode === "playerVsPlayer") {
+      changeScreens("playing", true);
+    } else {
+      changeScreens("playing");
+    }
+
     gameController();
   });
   return startGameButton;
@@ -111,34 +121,33 @@ export function createReturnToStartMenuButton(parent) {
   return returnButton;
 }
 
-export function createRandomizeButton(parent) {
+export function createRandomizeButton(parent, secondPlayer = false) {
   const randomizeButton = createGeneralButton(
     "randomizeButton",
     parent,
     "Randomize ships!",
   );
+  const [first, second] = handlePlayers.getPlayers();
+  const player = secondPlayer ? second : first;
 
-  const players = handlePlayers.getPlayers();
-  const humanPlayer = players[0];
   randomizeButton.addEventListener("click", () => {
-    randomizeShips(humanPlayer.board, humanPlayer.type);
+    randomizeShips(player.board, player.type);
   });
 
   return randomizeButton;
 }
 
-export function createClearButton(parent) {
+export function createClearButton(parent, secondPlayer = false) {
   const clearButton = createGeneralButton(
     "clearButton",
     parent,
     "Clear board!",
   );
-
-  const players = handlePlayers.getPlayers();
-  const humanPlayer = players[0];
+  const [first, second] = handlePlayers.getPlayers();
+  const player = secondPlayer ? second : first;
 
   clearButton.addEventListener("click", () => {
-    clearBoard(humanPlayer.board, humanPlayer.type);
+    clearBoard(player.board, player.type);
   });
   return clearButton;
 }

@@ -2,6 +2,7 @@ import {
   createRandomizeButton,
   createClearButton,
   createStartGameButton,
+  createReturnToStartMenuButton,
 } from "./createButtons";
 
 import { createGameBoard } from "./boardDOM";
@@ -124,15 +125,6 @@ export default function playerMenu() {
   const playerMenuContainer = document.createElement("div");
   content.appendChild(playerMenuContainer);
 
-  const titleContainer = document.createElement("div");
-
-  const title = document.createElement("div");
-  title.classList.add("title");
-  title.textContent = "PaperBoats";
-  titleContainer.appendChild(title);
-
-  playerMenuContainer.appendChild(titleContainer);
-
   const choosingBoards = document.createElement("div");
   choosingBoards.classList.add("choosingBoards");
   playerMenuContainer.appendChild(choosingBoards);
@@ -166,9 +158,13 @@ export default function playerMenu() {
   const startGameButtonContainer = document.createElement("div");
   createStartGameButton(startGameButtonContainer);
 
+  const returnToStartMenuContainer = document.createElement("div");
+  createReturnToStartMenuButton(returnToStartMenuContainer);
+
   choosingBoards.appendChild(deleteButtonContainer);
   choosingBoards.appendChild(clearButtonContainer);
   choosingBoards.appendChild(startGameButtonContainer);
+  choosingBoards.appendChild(returnToStartMenuContainer);
 
   return playerMenuContainer;
 }

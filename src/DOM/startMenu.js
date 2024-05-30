@@ -1,4 +1,8 @@
-import { createInitializeGameButton } from "./createButtons";
+import {
+  createGameModeChangeButton,
+  createInitializeGameButton,
+  createGameStyleChangeButton,
+} from "./createButtons";
 
 const content = document.querySelector("#content");
 
@@ -18,5 +22,15 @@ export default function startMenu() {
   const startGameButtonContainer = document.createElement("div");
   createInitializeGameButton(startGameButtonContainer);
 
+  const gameModeButtonContainer = document.createElement("div");
+  createGameModeChangeButton(gameModeButtonContainer);
+
+  const gameStyleButtonContainer = document.createElement("div");
+  createGameStyleChangeButton(gameStyleButtonContainer);
+
   startMenuContainer.appendChild(startGameButtonContainer);
+  startMenuContainer.appendChild(gameModeButtonContainer);
+  startMenuContainer.appendChild(gameStyleButtonContainer);
+
+  return startMenuContainer;
 }

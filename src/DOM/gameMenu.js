@@ -1,6 +1,9 @@
 import { registerPlayerHit } from "../modules/controller";
 import { createGameBoard } from "./boardDOM";
-import { createRestartGameButton } from "./createButtons";
+import {
+  createRestartGameButton,
+  createReturnToStartMenuButton,
+} from "./createButtons";
 
 const content = document.querySelector("#content");
 
@@ -44,6 +47,10 @@ export function gameMenu() {
   const restartGameButtonContainer = document.createElement("div");
   createRestartGameButton(restartGameButtonContainer);
 
+  const returnToStartMenuContainer = document.createElement("div");
+  createReturnToStartMenuButton(returnToStartMenuContainer);
+
   gameContainer.appendChild(restartGameButtonContainer);
+  gameContainer.appendChild(returnToStartMenuContainer);
   return gameContainer;
 }

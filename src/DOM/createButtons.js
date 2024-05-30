@@ -1,4 +1,6 @@
 import {
+  initializeGame,
+  gameParams,
   gameController,
   handlePlayers,
   randomizeShips,
@@ -6,11 +8,115 @@ import {
   restartGame,
 } from "../modules/controller";
 
+import changeScreens from "./screenChanger";
+
+function createGeneralButton(id, parent, text) {
+  const button = document.createElement("button");
+  button.id = id;
+  parent.appendChild(button);
+  button.textContent = text;
+  return button;
+}
+
+export function createInitializeGameButton(parent) {
+  const initializeGameButton = createGeneralButton(
+    "initializeGameButton",
+    parent,
+    "Start your game!",
+  );
+
+  initializeGameButton.addEventListener("click", () => {
+    initializeGame();
+    changeScreens("selecting");
+  });
+  return initializeGameButton;
+}
+
+export function createGameModeChangeButton(parent) {
+  const gameModeChangeButton = createGeneralButton(
+    "gameModeChangeButton",
+    parent,
+    "Game mode: Player Vs Computer",
+  );
+
+  gameModeChangeButton.addEventListener("click", () => {
+    gameParams.changeGameMode();
+    const gameMode = gameParams.getGameMode();
+    if (gameMode === "playerVsComputer") {
+      gameModeChangeButton.textContent = "Game mode: Player Vs Computer";
+    } else {
+      gameModeChangeButton.textContent = "Game mode: Player Vs Player";
+    }
+  });
+  return gameModeChangeButton;
+}
+
+export function createGameStyleChangeButton(parent) {
+  const gameStyleChangeButton = createGeneralButton(
+    "gameStyleChangeButton",
+    parent,
+    "Game style: One by one",
+  );
+
+  gameStyleChangeButton.addEventListener("click", () => {
+    gameParams.changeGameStyle();
+    const gameStyle = gameParams.getGameStyle();
+    if (gameStyle === "untilMiss") {
+      gameStyleChangeButton.textContent = "Game style: Until first miss";
+    } else {
+      gameStyleChangeButton.textContent = "Game style: One by one";
+    }
+  });
+  return gameStyleChangeButton;
+}
+
+export function createStartGameButton(parent) {
+  const startGameButton = createGeneralButton(
+    "startGameButton",
+    parent,
+    "Start your game!",
+  );
+
+  startGameButton.addEventListener("click", () => {
+    changeScreens("playing");
+    gameController();
+  });
+  return startGameButton;
+}
+
+export function createRestartGameButton(parent) {
+  const restartGameButton = createGeneralButton(
+    "restartGameButton",
+    parent,
+    "Restart game!",
+  );
+
+  restartGameButton.addEventListener("click", () => {
+    restartGame();
+    changeScreens("selecting");
+  });
+  return restartGameButton;
+}
+
+export function createReturnToStartMenuButton(parent) {
+  const returnButton = createGeneralButton(
+    "returnButton",
+    parent,
+    "Return to starting menu",
+  );
+
+  returnButton.addEventListener("click", () => {
+    changeScreens("starting");
+  });
+  return returnButton;
+}
+
 export function createRandomizeButton(parent) {
-  const randomizeButton = document.createElement("button");
-  randomizeButton.id = "randomizeButton";
-  parent.appendChild(randomizeButton);
-  randomizeButton.textContent = "Randomize ships!";
+  const randomizeButton = createGeneralButton(
+    "randomizeButton",
+    parent,
+    "Randomize ships!",
+  );
 
   const players = handlePlayers.getPlayers();
   const humanPlayer = players[0];
@@ -22,51 +128,17 @@ export function createRandomizeButton(parent) {
 }
 
 export function createClearButton(parent) {
-  const clearButton = document.createElement("button");
-  clearButton.id = "clearButton";
-  parent.appendChild(clearButton);
-  clearButton.textContent = "Clear board!";
+  const clearButton = createGeneralButton(
+    "clearButton",
+    parent,
+    "Clear board!",
+  );
 
-  const [humanPlayer, computerPlayer] = handlePlayers.getPlayers();
+  const players = handlePlayers.getPlayers();
+  const humanPlayer = players[0];
 
   clearButton.addEventListener("click", () => {
     clearBoard(humanPlayer.board, humanPlayer.type);
   });
   return clearButton;
-}
-
-export function createStartGameButton(parent) {
-  const startGameButton = document.createElement("button");
-  startGameButton.id = "startGameButton";
-  parent.appendChild(startGameButton);
-  startGameButton.textContent = "Start your game!";
-
-  startGameButton.addEventListener("click", () => {
-    gameController();
-  });
-  return startGameButton;
-}
-
-export function createInitializeGameButton(parent) {
-  const initializeGameButton = document.createElement("button");
-  initializeGameButton.id = "initializeGameButton";
-  parent.appendChild(initializeGameButton);
-  initializeGameButton.textContent = "Start your game!";
-
-  initializeGameButton.addEventListener("click", () => {
-    gameController();
-  });
-  return initializeGameButton;
-}
-
-export function createRestartGameButton(parent) {
-  const restartGameButton = document.createElement("button");
-  restartGameButton.id = "restartGameButton";
-  parent.appendChild(restartGameButton);
-  restartGameButton.textContent = "Restart game!";
-
-  restartGameButton.addEventListener("click", () => {
-    restartGame();
-  });
-  return restartGameButton;
 }

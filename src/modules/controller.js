@@ -520,21 +520,49 @@ export function restartGame() {
   }
 }
 
-export const gameController = function () {
+export function checkFirstPlayerShips() {
   const [player1, player2] = handlePlayers.getPlayers();
   const ships1 = player1.board.ships;
+  if (ships1.length === 10) {
+    return true;
+  }
+  return false;
+}
+export function checkSecondPlayerShips() {
+  const [player1, player2] = handlePlayers.getPlayers();
   const ships2 = player2.board.ships;
+  if (ships2.length === 10) {
+    return true;
+  }
+  return false;
+}
+
+export function checkPlacedShips() {
+  const [player1, player2] = handlePlayers.getPlayers();
+
   if (player2.type === "computer") {
-    if (ships1.length === 10) {
-      randomizeShips(player2.board, player2.type);
-      renderBoard(player1.board, player1.type);
+    if (checkFirstPlayerShips()) {
+      return true;
     }
   }
   if (player2.type === "human2") {
-    if (ships1.length === 10 && ships2.length === 10) {
-      renderBoard(player1.board, player1.type);
-      renderBoard(player2.board, player2.type);
+    if (checkFirstPlayerShips() && checkSecondPlayerShips()) {
+      return true;
     }
+  }
+  return false;
+}
+
+export const gameController = function () {
+  const [player1, player2] = handlePlayers.getPlayers();
+
+  if (player2.type === "computer") {
+    randomizeShips(player2.board, player2.type);
+    renderBoard(player1.board, player1.type);
+  }
+  if (player2.type === "human2") {
+    renderBoard(player1.board, player1.type);
+    renderBoard(player2.board, player2.type);
   }
 
   return {};

@@ -6,6 +6,7 @@ import {
   randomizeShips,
   clearBoard,
   restartGame,
+  checkPlacedShips,
 } from "../modules/controller";
 
 import changeScreens from "./screenChanger";
@@ -81,15 +82,19 @@ export function createStartGameButton(parent) {
     parent,
     "Start your game!",
   );
-  const mode = gameParams.getGameMode();
-  startGameButton.addEventListener("click", () => {
-    if (mode === "playerVsPlayer") {
-      changeScreens("playing", true);
-    } else {
-      changeScreens("playing");
-    }
 
-    gameController();
+  startGameButton.addEventListener("click", () => {
+    const mode = gameParams.getGameMode();
+    const shipsArePlaced = checkPlacedShips();
+    if (shipsArePlaced) {
+      if (mode === "playerVsPlayer") {
+        changeScreens("playing", true);
+      } else {
+        changeScreens("playing");
+      }
+
+      gameController();
+    }
   });
   return startGameButton;
 }

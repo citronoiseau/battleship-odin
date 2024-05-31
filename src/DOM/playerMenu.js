@@ -5,8 +5,12 @@ import {
   createReturnToStartMenuButton,
 } from "./createButtons";
 
-import { createGameBoard } from "./boardDOM";
-import { placePlayerShip } from "../modules/controller";
+import { createGameBoard, hideCells } from "./boardDOM";
+import {
+  placePlayerShip,
+  checkFirstPlayerShips,
+  checkSecondPlayerShips,
+} from "../modules/controller";
 
 const content = document.querySelector("#content");
 function handleDragStart(event) {
@@ -127,10 +131,7 @@ function restartShips(selectionBoard) {
 }
 
 function hideShips(container) {
-  const ships = container.querySelectorAll(".ship");
-  ships.forEach((ship) => {
-    ship.classList.add("hidden");
-  });
+  container.classList.add("hidden");
 }
 
 export default function playerMenu(twoPlayers) {
@@ -163,13 +164,57 @@ export default function playerMenu(twoPlayers) {
   playerOneContainer.appendChild(randomizeButtonContainer);
   playerOneContainer.appendChild(clearButtonContainer);
 
+  const startGameButtonContainer = document.createElement("div");
+  createStartGameButton(startGameButtonContainer);
+
+  const returnToStartMenuContainer = document.createElement("div");
+  createReturnToStartMenuButton(returnToStartMenuContainer);
+
+  choosingBoards.appendChild(startGameButtonContainer);
+  choosingBoards.appendChild(returnToStartMenuContainer);
+
   if (twoPlayers) {
-    const playerTwoContainer = document.createElement("div");
-    playerTwoContainer.classList.add("playerTwoContainer");
-    choosingBoards.appendChild(playerTwoContainer);
+    const controlButtonsContainer = document.createElement("div");
+    controlButtonsContainer.classList.add("controlButtonsContainer");
+    choosingBoards.appendChild(controlButtonsContainer);
+
+    const hideFirstPlayer = document.createElement("button");
+    hideFirstPlayer.id = "hideFirstPlayer";
+    hideFirstPlayer.textContent = "Pass selecting to other player";
+
+    const hideSecondPlayer = document.createElement("button");
+    hideSecondPlayer.id = "hideSecondPlayer";
+    hideSecondPlayer.textContent = "Finish selecting";
+    hideSecondPlayer.style.display = "none";
 
     const selectionBoard2 = document.createElement("div");
     selectionBoard2.classList.add("selectionBoard");
+    selectionBoard2.classList.add("hidden");
+
+    const playerTwoContainer = document.createElement("div");
+    playerTwoContainer.classList.add("playerTwoContainer");
+
+    hideFirstPlayer.addEventListener("click", () => {
+      if (checkFirstPlayerShips()) {
+        hideCells("human");
+        selectionBoard2.classList.remove("hidden");
+        hideFirstPlayer.style.display = "none";
+        hideSecondPlayer.style.display = "block";
+      }
+    });
+
+    hideSecondPlayer.addEventListener("click", () => {
+      if (checkSecondPlayerShips()) {
+        hideCells("human2");
+        hideSecondPlayer.style.display = "none";
+      }
+    });
+
+    controlButtonsContainer.appendChild(hideFirstPlayer);
+    controlButtonsContainer.appendChild(hideSecondPlayer);
+
+    choosingBoards.appendChild(playerTwoContainer);
+
     playerTwoContainer.appendChild(selectionBoard2);
     createShips(selectionBoard2);
 
@@ -191,6 +236,7 @@ export default function playerMenu(twoPlayers) {
     playerTwoContainer.appendChild(randomizeButtonContainer2);
     playerTwoContainer.appendChild(clearButtonContainer2);
   }
+
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.addEventListener("dragstart", (event) => {
@@ -200,15 +246,6 @@ export default function playerMenu(twoPlayers) {
     cell.addEventListener("dragleave", handleDragLeave);
     cell.addEventListener("drop", handleDrop);
   });
-
-  const startGameButtonContainer = document.createElement("div");
-  createStartGameButton(startGameButtonContainer);
-
-  const returnToStartMenuContainer = document.createElement("div");
-  createReturnToStartMenuButton(returnToStartMenuContainer);
-
-  choosingBoards.appendChild(startGameButtonContainer);
-  choosingBoards.appendChild(returnToStartMenuContainer);
 
   return playerMenuContainer;
 }

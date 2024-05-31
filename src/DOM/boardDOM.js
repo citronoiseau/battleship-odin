@@ -71,3 +71,12 @@ export function renderBoard(board, typeOfPlayer) {
     }
   }
 }
+
+export function hideCells(typeOfPlayer) {
+  const gameboard = document.getElementById(`${typeOfPlayer}`);
+  const cells = gameboard.querySelectorAll(".cell");
+
+  cells.forEach((cell) => {
+    cell.classList.add("hidden");
+  });
+}

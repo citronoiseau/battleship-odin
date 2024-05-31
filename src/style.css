@@ -21,8 +21,9 @@
   display: flex;
 }
 .shipContainer > div.hidden {
-  display: none;
+  visibility: hidden;
 }
+
 .boardsContainer {
   margin-top: 50px;
   justify-content: center;
@@ -81,12 +82,18 @@
   background-color: #cfcfcf;
   transition: all 0.1s ease-out;
 }
-
-.cell.human.ship {
+.cell.human.ship.hidden,
+.cell.human2.ship.hidden {
+  background-color: #e0e0e0;
+  border: 1px solid #c2c2c2;
+}
+.cell.human.ship,
+.cell.human2.ship {
   background-color: #202020;
   border: 1px solid #202020;
 }
-.cell.human.ship.hit {
+.cell.human.ship.hit,
+.cell.human2.ship.hit {
   background-color: #f95e5e;
   border: 1px solid #f95e5e;
 }
@@ -104,4 +111,12 @@
 }
 .highlighted {
   background-color: lightblue;
+}
+
+.choosingBoards {
+  display: flex;
+  flex-wrap: wrap;
+}
+.selectionBoard.hidden {
+  visibility: hidden;
 }

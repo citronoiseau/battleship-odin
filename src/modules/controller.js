@@ -1,6 +1,11 @@
 /* eslint-disable no-plusplus */
 import Player from "../classes/player";
-import { renderBoard } from "../DOM/boardDOM";
+import {
+  renderBoard,
+  hideCells,
+  showCells,
+  areCellsHidden,
+} from "../DOM/boardDOM";
 import { changeMessage } from "../DOM/gameMenu";
 
 export const gameParams = (function () {
@@ -390,6 +395,7 @@ const smartComputer = (function () {
 
 const handleRounds = (function () {
   let isWin = false;
+  let shipsAreHidden = false;
 
   const getIsWin = function () {
     if (isWin) {
@@ -422,6 +428,7 @@ const handleRounds = (function () {
     const waitingPlayer = handlePlayers.getWaitingPlayer();
     const activePlayer = handlePlayers.getActivePlayer();
     const gameStyle = gameParams.getGameStyle();
+    const gameMode = gameParams.getGameMode();
     if (gameStyle === "oneByOne") {
       handlePlayers.switchTurn();
       renderBoard(waitingPlayer.board, waitingPlayer.type);
@@ -447,24 +454,46 @@ const handleRounds = (function () {
         }
       }
     }
+
     renderBoard(waitingPlayer.board, waitingPlayer.type);
   };
-  return { getIsWin, switchTurn, checkWin, registerWin, restartRounds };
+
+  const areShipsHidden = function () {
+    console.log(shipsAreHidden);
+    return shipsAreHidden;
+  };
+
+  const changeShips = function () {
+    shipsAreHidden = !shipsAreHidden;
+  };
+
+  return {
+    getIsWin,
+    switchTurn,
+    checkWin,
+    registerWin,
+    restartRounds,
+    areShipsHidden,
+    changeShips,
+  };
 })();
 
 export function registerPlayerHit(cell) {
+  const shipsHidden = handleRounds.areShipsHidden();
+  const waitingPlayer = handlePlayers.getWaitingPlayer();
   const humanClass = Array.from(cell.classList).find((cls) =>
     cls.startsWith("human"),
   );
-  console.log(humanClass);
   if (
     handlePlayers.getActivePlayer().type === "computer" ||
     handleRounds.getIsWin() ||
-    handlePlayers.getActivePlayer().type === humanClass
+    handlePlayers.getActivePlayer().type === humanClass ||
+    shipsHidden ||
+    !areCellsHidden(waitingPlayer.type)
   ) {
     return;
   }
-  const waitingPlayer = handlePlayers.getWaitingPlayer();
+
   const waitingPlayerBoard = waitingPlayer.board;
   if (!handleRounds.getIsWin()) {
     const x = parseInt(cell.getAttribute("data-row"), 10);
@@ -553,6 +582,20 @@ export function checkPlacedShips() {
   return false;
 }
 
+export function passTurn() {
+  const [player1, player2] = handlePlayers.getPlayers();
+  hideCells(player1.type);
+  hideCells(player2.type);
+  handleRounds.changeShips();
+  changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+}
+
+export function readyToHit() {
+  const player = handlePlayers.getActivePlayer();
+  showCells(player.type);
+  handleRounds.changeShips();
+}
+
 export const gameController = function () {
   const [player1, player2] = handlePlayers.getPlayers();
 
@@ -563,6 +606,8 @@ export const gameController = function () {
   if (player2.type === "human2") {
     renderBoard(player1.board, player1.type);
     renderBoard(player2.board, player2.type);
+    hideCells(player2.type);
+    changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
   }
 
   return {};

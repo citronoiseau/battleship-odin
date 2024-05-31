@@ -80,3 +80,18 @@ export function hideCells(typeOfPlayer) {
     cell.classList.add("hidden");
   });
 }
+
+export function showCells(typeOfPlayer) {
+  const gameboard = document.getElementById(`${typeOfPlayer}`);
+  const cells = gameboard.querySelectorAll(".cell");
+
+  cells.forEach((cell) => {
+    cell.classList.remove("hidden");
+  });
+}
+
+export function areCellsHidden(typeOfPlayer) {
+  const gameboard = document.getElementById(`${typeOfPlayer}`);
+  const hiddenCell = gameboard.querySelector(".cell.hidden");
+  return hiddenCell !== null;
+}

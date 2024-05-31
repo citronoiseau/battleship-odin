@@ -1,4 +1,4 @@
-import { registerPlayerHit } from "../modules/controller";
+import { registerPlayerHit, passTurn, readyToHit } from "../modules/controller";
 import { createGameBoard } from "./boardDOM";
 import {
   createRestartGameButton,
@@ -31,6 +31,30 @@ export function gameMenu(twoPlayers) {
 
   const playerBoard = createGameBoard("human", boardsContainer);
   if (twoPlayers) {
+    const controlButtonsContainer = document.createElement("div");
+    gameContainer.appendChild(controlButtonsContainer);
+
+    const passTurnButton = document.createElement("button");
+    passTurnButton.textContent = "Pass turn";
+
+    const readyToHitButton = document.createElement("button");
+    readyToHitButton.textContent = "Ready!";
+    readyToHitButton.style.display = "none";
+
+    passTurnButton.addEventListener("click", () => {
+      passTurn();
+      passTurnButton.style.display = "none";
+      readyToHitButton.style.display = "block";
+    });
+
+    readyToHitButton.addEventListener("click", () => {
+      readyToHit();
+      passTurnButton.style.display = "block";
+      readyToHitButton.style.display = "none";
+    });
+    controlButtonsContainer.appendChild(passTurnButton);
+    controlButtonsContainer.appendChild(readyToHitButton);
+
     const playerBoard2 = createGameBoard("human2", boardsContainer);
     const cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {

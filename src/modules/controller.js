@@ -56,8 +56,8 @@ export const handlePlayers = (function () {
       players.push(humanPlayer);
       players.push(computerPlayer);
     } else {
-      const humanPlayer = new Player("human");
-      const humanPlayer2 = new Player("human2");
+      const humanPlayer = new Player("human", "Player 1");
+      const humanPlayer2 = new Player("human2", "Player 2");
       activePlayer = humanPlayer;
       waitingPlayer = humanPlayer2;
       players.push(humanPlayer);
@@ -417,7 +417,7 @@ const handleRounds = (function () {
     if (waitingPlayer.board.areAllShipsSunk()) {
       handleRounds.registerWin();
       renderBoard(waitingPlayer.board, waitingPlayer.type);
-      changeMessage(`${handlePlayers.getActivePlayer().type} won!`);
+      changeMessage(`${handlePlayers.getActivePlayer().name} won!`);
       return true;
     }
 
@@ -433,7 +433,7 @@ const handleRounds = (function () {
     if (gameStyle === "oneByOne") {
       handlePlayers.switchTurn();
       if (gameMode === "playerVsPlayer") {
-        changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+        changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
       }
       renderBoard(waitingPlayer.board, waitingPlayer.type);
       if (waitingPlayer.type === "computer") {
@@ -444,7 +444,7 @@ const handleRounds = (function () {
       if (!waitingPlayer.board.board[x][y].ship) {
         handlePlayers.switchTurn();
         if (gameMode === "playerVsPlayer") {
-          changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+          changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
         }
         renderBoard(waitingPlayer.board, waitingPlayer.type);
         if (waitingPlayer.type === "computer") {
@@ -466,7 +466,6 @@ const handleRounds = (function () {
   };
 
   const areShipsHidden = function () {
-    console.log(shipsAreHidden);
     return shipsAreHidden;
   };
 
@@ -485,29 +484,48 @@ const handleRounds = (function () {
   };
 })();
 
-export function registerPlayerHit(cell) {
+function checkIfValidHit(cell) {
+  const gameMode = gameParams.getGameMode();
   const shipsHidden = handleRounds.areShipsHidden();
   const waitingPlayer = handlePlayers.getWaitingPlayer();
   const humanClass = Array.from(cell.classList).find((cls) =>
     cls.startsWith("human"),
   );
-  if (
-    handlePlayers.getActivePlayer().type === "computer" ||
-    handleRounds.getIsWin() ||
-    handlePlayers.getActivePlayer().type === humanClass ||
-    shipsHidden ||
-    !areCellsHidden(waitingPlayer.type)
-  ) {
-    return;
-  }
 
-  const waitingPlayerBoard = waitingPlayer.board;
-  if (!handleRounds.getIsWin()) {
-    const x = parseInt(cell.getAttribute("data-row"), 10);
-    const y = parseInt(cell.getAttribute("data-column"), 10);
-    waitingPlayerBoard.receiveAttack(x, y);
-    handleRounds.checkWin();
-    handleRounds.switchTurn(x, y);
+  if (gameMode === "playerVsComputer") {
+    if (
+      handlePlayers.getActivePlayer().type === "computer" ||
+      handleRounds.getIsWin()
+    ) {
+      return false;
+    }
+  }
+  if (gameMode === "playerVsPlayer") {
+    if (
+      handleRounds.getIsWin() ||
+      handlePlayers.getActivePlayer().type === humanClass ||
+      shipsHidden ||
+      !areCellsHidden(waitingPlayer.type)
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function registerPlayerHit(cell) {
+  const waitingPlayer = handlePlayers.getWaitingPlayer();
+  if (checkIfValidHit(cell)) {
+    const waitingPlayerBoard = waitingPlayer.board;
+    if (!handleRounds.getIsWin()) {
+      const x = parseInt(cell.getAttribute("data-row"), 10);
+      const y = parseInt(cell.getAttribute("data-column"), 10);
+      waitingPlayerBoard.receiveAttack(x, y);
+      handleRounds.checkWin();
+      handleRounds.switchTurn(x, y);
+    }
+  } else {
+    return false;
   }
 }
 
@@ -597,7 +615,7 @@ export function passTurn() {
   hideCells(player1.type);
   hideCells(player2.type);
   handleRounds.changeShips();
-  changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+  changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
 }
 
 export function readyToHit() {
@@ -617,7 +635,7 @@ export const gameController = function () {
     renderBoard(player1.board, player1.type);
     renderBoard(player2.board, player2.type);
     hideCells(player2.type);
-    changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+    changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
   }
 
   return {};

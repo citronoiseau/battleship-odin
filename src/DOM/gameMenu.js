@@ -78,7 +78,7 @@ export function gameMenu(twoPlayers) {
   }
 
   const restartGameButtonContainer = document.createElement("div");
-  createRestartGameButton(restartGameButtonContainer);
+  createRestartGameButton(restartGameButtonContainer, twoPlayers);
 
   const returnToStartMenuContainer = document.createElement("div");
   createReturnToStartMenuButton(returnToStartMenuContainer);

@@ -39,15 +39,22 @@ export function createInitializeGameButton(parent) {
 }
 
 export function createGameModeChangeButton(parent) {
+  let gameMode = gameParams.getGameMode();
+  let textMessage;
+  if (gameMode === "playerVsComputer") {
+    textMessage = "Game mode: Player Vs Computer";
+  } else {
+    textMessage = "Game mode: Player Vs Player";
+  }
   const gameModeChangeButton = createGeneralButton(
     "gameModeChangeButton",
     parent,
-    "Game mode: Player Vs Computer",
+    textMessage,
   );
 
   gameModeChangeButton.addEventListener("click", () => {
     gameParams.changeGameMode();
-    const gameMode = gameParams.getGameMode();
+    gameMode = gameParams.getGameMode();
     if (gameMode === "playerVsComputer") {
       gameModeChangeButton.textContent = "Game mode: Player Vs Computer";
     } else {
@@ -58,15 +65,22 @@ export function createGameModeChangeButton(parent) {
 }
 
 export function createGameStyleChangeButton(parent) {
+  let gameStyle = gameParams.getGameStyle();
+  let textMessage;
+  if (gameStyle === "untilMiss") {
+    textMessage = "Game style: Until first miss";
+  } else {
+    textMessage = "Game style: One by one";
+  }
   const gameStyleChangeButton = createGeneralButton(
     "gameStyleChangeButton",
     parent,
-    "Game style: One by one",
+    textMessage,
   );
 
   gameStyleChangeButton.addEventListener("click", () => {
     gameParams.changeGameStyle();
-    const gameStyle = gameParams.getGameStyle();
+    gameStyle = gameParams.getGameStyle();
     if (gameStyle === "untilMiss") {
       gameStyleChangeButton.textContent = "Game style: Until first miss";
     } else {
@@ -99,7 +113,7 @@ export function createStartGameButton(parent) {
   return startGameButton;
 }
 
-export function createRestartGameButton(parent) {
+export function createRestartGameButton(parent, twoPlayers) {
   const restartGameButton = createGeneralButton(
     "restartGameButton",
     parent,
@@ -108,7 +122,7 @@ export function createRestartGameButton(parent) {
 
   restartGameButton.addEventListener("click", () => {
     restartGame();
-    changeScreens("selecting");
+    changeScreens("selecting", twoPlayers);
   });
   return restartGameButton;
 }

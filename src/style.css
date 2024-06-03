@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Englebert&family=Indie+Flower&display=swap");
 
 * {
   margin: 0;
@@ -6,11 +6,74 @@
   box-sizing: border-box;
 }
 
-.title {
-  font-family: "Luckiest Guy", cursive;
-  font-size: 50px;
-  color: #3c2803;
+/* starting menu style */
+
+.startMenuContainer {
+  height: 100vh;
+  background-image: url("icons/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
+
+.title {
+  font-family: "Indie Flower", cursive;
+  font-size: 10vw;
+  color: #394f41;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: "Englebert", cursive;
+  gap: 15px;
+}
+
+.buttonContainer button {
+  background-color: #777b76;
+  font-size: 1.2rem;
+  letter-spacing: 0.2rem;
+  color: #f6f5e3;
+  border: none;
+  padding: 20px;
+  border-radius: 20px;
+  margin: 0 15px 0 15px;
+  transition: 0.2s ease-in-out;
+}
+
+.buttonContainer button:hover {
+  background-color: #999d98;
+  transform: translateY(-5px);
+}
+
+.buttonContainer button:active {
+  background-color: #b6bcb5;
+}
+
+.authorMessage,
+.authorMessage a {
+  font-family: "Englebert", cursive;
+  font-size: 1.2rem;
+  color: #394f41;
+  transition: 0.2s ease;
+}
+.authorMessage a:hover {
+  color: #63846f;
+}
+
+@media (max-width: 700px) {
+  .startMenuContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* selecting menu style */
 
 .selectionBoard {
   display: flex;
@@ -78,7 +141,9 @@
   background-color: #5f5f5f;
   border: 1px solid #c2c2c2;
 }
-.cell:hover {
+.cell:hover,
+.cell.human.ship.hidden:hover,
+.cell.human2.ship.hidden:hover {
   background-color: #cfcfcf;
   transition: all 0.1s ease-out;
 }

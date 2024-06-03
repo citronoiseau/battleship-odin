@@ -429,8 +429,12 @@ const handleRounds = (function () {
     const activePlayer = handlePlayers.getActivePlayer();
     const gameStyle = gameParams.getGameStyle();
     const gameMode = gameParams.getGameMode();
+
     if (gameStyle === "oneByOne") {
       handlePlayers.switchTurn();
+      if (gameMode === "playerVsPlayer") {
+        changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+      }
       renderBoard(waitingPlayer.board, waitingPlayer.type);
       if (waitingPlayer.type === "computer") {
         smartComputer.playSmartComputerRound();
@@ -439,6 +443,9 @@ const handleRounds = (function () {
     if (gameStyle === "untilMiss") {
       if (!waitingPlayer.board.board[x][y].ship) {
         handlePlayers.switchTurn();
+        if (gameMode === "playerVsPlayer") {
+          changeMessage(`${handlePlayers.getActivePlayer().type} turn!`);
+        }
         renderBoard(waitingPlayer.board, waitingPlayer.type);
         if (waitingPlayer.type === "computer") {
           smartComputer.playSmartComputerRound();
@@ -544,7 +551,10 @@ export function restartGame() {
   clearBoard(player2.board, player2.type);
   handleRounds.restartRounds();
   smartComputer.restartComputerMemory(true);
-  if (handlePlayers.activePlayer === "computer") {
+  if (
+    handlePlayers.activePlayer === "computer" ||
+    handlePlayers.activePlayer === "human2"
+  ) {
     handlePlayers.switchTurn();
   }
 }

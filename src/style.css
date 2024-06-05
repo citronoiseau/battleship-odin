@@ -17,6 +17,7 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  font-family: "Englebert", cursive;
 }
 
 .title {
@@ -25,17 +26,18 @@
   color: #394f41;
 }
 
-.buttonContainer {
+.startMenuContainer .buttonContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: "Englebert", cursive;
   gap: 15px;
 }
 
-.buttonContainer button {
+.buttonContainer button,
+#confirmButton {
+  font-family: "Englebert", cursive;
   background-color: #777b76;
-  font-size: 1.2rem;
+  font-size: min(5vw, 1.5rem);
   letter-spacing: 0.2rem;
   color: #f6f5e3;
   border: none;
@@ -43,9 +45,11 @@
   border-radius: 20px;
   margin: 0 15px 0 15px;
   transition: 0.2s ease-in-out;
+  width: 300px;
 }
 
-.buttonContainer button:hover {
+.buttonContainer button:hover,
+#confirmButton:hover {
   background-color: #999d98;
   transform: translateY(-5px);
 }
@@ -65,15 +69,108 @@
   color: #63846f;
 }
 
+#closeButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: transparent;
+  border: none;
+  padding: 15px;
+  transition: all 0.2s ease-in;
+  border-radius: 0px 15px 0 15px;
+}
+
+#closeButton img {
+  transition: transform 0.3s ease;
+}
+#closeButton:hover {
+  background-color: #26382d;
+}
+#closeButton:hover img {
+  transform: rotate(65deg);
+}
+
+.dialog {
+  top: 50%;
+  height: 0;
+  overflow: hidden;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+  border: none;
+  padding: 20px 50px;
+  visibility: hidden;
+  border-radius: 15px;
+  box-shadow:
+    rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  background-color: #394f41;
+  color: #f6f5e3;
+  width: 60vw;
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.dialog.active {
+  overflow-y: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+.dialog .dialogTitle {
+  font-family: "Indie Flower", cursive;
+  font-size: min(5vw, 3.5rem);
+}
+.dialog::-webkit-scrollbar {
+  width: 12px;
+}
+.dialog::-webkit-scrollbar-track {
+  background: #26382d;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+.dialog::-webkit-scrollbar-thumb {
+  background: #19281f;
+  border-top-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+.dialog::-webkit-scrollbar-thumb:hover {
+  background: #415b4b;
+}
+
+.paragraphTitle {
+  font-size: 1.3rem;
+  text-align: center;
+}
+.dialogParagraph {
+  font-size: 1.2rem;
+  text-align: justify;
+}
+
+#confirmButton {
+  font-size: min(3vw, 1.2rem);
+  width: 220px;
+}
 @media (max-width: 700px) {
   .startMenuContainer {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+  .dialog {
+    padding: 30px;
+  }
 }
 
 /* selecting menu style */
+
+.selectMenuContainer {
+  display: flex;
+}
 
 .selectionBoard {
   display: flex;
@@ -112,6 +209,8 @@
   max-width: 400px;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
+  background: url("icons/water.jpg");
+  background-size: cover;
 }
 
 .numberContainerX {
@@ -133,7 +232,6 @@
 .shipPart {
   width: 40px;
   height: 40px;
-  background-color: #e0e0e0;
   border: 1px solid #c2c2c2;
 }
 

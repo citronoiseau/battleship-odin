@@ -4,6 +4,8 @@ import {
   createGameStyleChangeButton,
 } from "./createButtons";
 
+import createDialog from "./helpMenu";
+
 const content = document.querySelector("#content");
 
 export default function startMenu() {
@@ -13,7 +15,7 @@ export default function startMenu() {
 
   const titleContainer = document.createElement("div");
   titleContainer.classList.add("titleContainer");
-  const title = document.createElement("div");
+  const title = document.createElement("h1");
   title.classList.add("title");
   title.textContent = "Battleship";
   titleContainer.appendChild(title);
@@ -33,6 +35,12 @@ export default function startMenu() {
   const gameStyleButtonContainer = document.createElement("div");
   createGameStyleChangeButton(gameStyleButtonContainer);
 
+  const helpButtonContainer = document.createElement("div");
+  const helpButton = document.createElement("button");
+  helpButton.textContent = "Help";
+
+  helpButtonContainer.appendChild(helpButton);
+
   const message = document.createElement("div");
   message.textContent = "by ";
   message.classList.add("authorMessage");
@@ -46,7 +54,14 @@ export default function startMenu() {
   buttonContainer.appendChild(startGameButtonContainer);
   buttonContainer.appendChild(gameModeButtonContainer);
   buttonContainer.appendChild(gameStyleButtonContainer);
+  buttonContainer.appendChild(helpButtonContainer);
   startMenuContainer.appendChild(message);
+
+  const dialog = createDialog();
+  helpButton.addEventListener("click", () => {
+    dialog.showModal();
+    dialog.classList.add("active");
+  });
 
   return startMenuContainer;
 }

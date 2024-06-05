@@ -127,7 +127,7 @@ export function createRestartGameButton(parent, twoPlayers) {
   return restartGameButton;
 }
 
-export function createReturnToStartMenuButton(parent) {
+export function createReturnToStartMenuButton(parent, fromMenu) {
   const returnButton = createGeneralButton(
     "returnButton",
     parent,
@@ -135,6 +135,10 @@ export function createReturnToStartMenuButton(parent) {
   );
 
   returnButton.addEventListener("click", () => {
+    console.log(fromMenu);
+    if (!fromMenu) {
+      restartGame();
+    }
     changeScreens("starting");
   });
   return returnButton;

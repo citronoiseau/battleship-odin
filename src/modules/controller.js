@@ -48,8 +48,8 @@ export const handlePlayers = (function () {
   const initializePlayers = function (gameMode) {
     players.length = 0;
     if (gameMode === "playerVsComputer") {
-      const humanPlayer = new Player("human");
-      const computerPlayer = new Player("computer");
+      const humanPlayer = new Player("human", "Player 1");
+      const computerPlayer = new Player("computer", "Computer");
 
       activePlayer = humanPlayer;
       waitingPlayer = computerPlayer;

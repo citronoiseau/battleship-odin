@@ -78,7 +78,7 @@ function handleRotation(event) {
   rotateShip(event.currentTarget);
 }
 
-function createDOMShip(id, length, shipsArr) {
+function createDOMShip(id, length, shipsArr, parent) {
   const shipContainer = document.createElement("div");
   shipContainer.classList.add("shipContainer");
   const ship = document.createElement("div");
@@ -99,6 +99,8 @@ function createDOMShip(id, length, shipsArr) {
   ship.setAttribute("draggable", true);
   ship.addEventListener("dragstart", handleDragStart);
   ship.addEventListener("contextmenu", handleRotation);
+
+  parent.appendChild(shipContainer);
 }
 
 function createShips(selectionBoard) {
@@ -106,24 +108,21 @@ function createShips(selectionBoard) {
   while (board.firstChild) {
     board.removeChild(board.firstChild);
   }
+
   const ships = [];
-  createDOMShip(1, 2, ships);
-  createDOMShip(2, 2, ships);
-  createDOMShip(3, 2, ships);
-  createDOMShip(4, 2, ships);
+  createDOMShip(1, 2, ships, board);
+  createDOMShip(2, 2, ships, board);
+  createDOMShip(3, 2, ships, board);
+  createDOMShip(4, 2, ships, board);
 
-  createDOMShip(5, 3, ships);
-  createDOMShip(6, 3, ships);
-  createDOMShip(7, 3, ships);
+  createDOMShip(5, 3, ships, board);
+  createDOMShip(6, 3, ships, board);
+  createDOMShip(7, 3, ships, board);
 
-  createDOMShip(8, 4, ships);
-  createDOMShip(9, 4, ships);
+  createDOMShip(8, 4, ships, board);
+  createDOMShip(9, 4, ships, board);
 
-  createDOMShip(10, 5, ships);
-
-  ships.forEach((ship) => {
-    board.appendChild(ship);
-  });
+  createDOMShip(10, 5, ships, board);
 }
 
 function restartShips(selectionBoard) {
@@ -135,16 +134,32 @@ function hideShips(container) {
 }
 
 export default function playerMenu(twoPlayers) {
-  const playerMenuContainer = document.createElement("div");
-  content.appendChild(playerMenuContainer);
+  const selectMenuContainer = document.createElement("div");
+  selectMenuContainer.classList.add("selectMenuContainer");
+  content.appendChild(selectMenuContainer);
 
-  const choosingBoards = document.createElement("div");
-  choosingBoards.classList.add("choosingBoards");
-  playerMenuContainer.appendChild(choosingBoards);
+  if (!twoPlayers) {
+    const screenControlsContainer = document.createElement("div");
+    screenControlsContainer.classList.add("screenControlsContainer");
+    selectMenuContainer.appendChild(screenControlsContainer);
+
+    const returnToStartMenuContainer = document.createElement("div");
+    createReturnToStartMenuButton(returnToStartMenuContainer, true);
+
+    const startGameButtonContainer = document.createElement("div");
+    createStartGameButton(startGameButtonContainer);
+
+    screenControlsContainer.appendChild(returnToStartMenuContainer);
+    screenControlsContainer.appendChild(startGameButtonContainer);
+  }
+
+  const choosingContainer = document.createElement("div");
+  choosingContainer.classList.add("choosingContainer");
+  selectMenuContainer.appendChild(choosingContainer);
 
   const playerOneContainer = document.createElement("div");
   playerOneContainer.classList.add("playerOneContainer");
-  choosingBoards.appendChild(playerOneContainer);
+  choosingContainer.appendChild(playerOneContainer);
 
   const selectionBoard = document.createElement("div");
   selectionBoard.classList.add("selectionBoard");
@@ -153,30 +168,36 @@ export default function playerMenu(twoPlayers) {
 
   const playerBoard = createGameBoard("human", playerOneContainer);
 
+  const boardControlsContainer = document.createElement("div");
+  boardControlsContainer.classList.add("boardControlsContainer");
+  playerOneContainer.appendChild(boardControlsContainer);
+
   const randomizeButtonContainer = document.createElement("div");
   const randomizeButton = createRandomizeButton(randomizeButtonContainer);
   randomizeButton.addEventListener("click", () => hideShips(selectionBoard));
 
   const clearButtonContainer = document.createElement("div");
   const clearButton = createClearButton(clearButtonContainer);
-  clearButton.addEventListener("click", () => restartShips(selectionBoard));
-
-  playerOneContainer.appendChild(randomizeButtonContainer);
-  playerOneContainer.appendChild(clearButtonContainer);
-
-  const startGameButtonContainer = document.createElement("div");
-  createStartGameButton(startGameButtonContainer);
-
-  const returnToStartMenuContainer = document.createElement("div");
-  createReturnToStartMenuButton(returnToStartMenuContainer);
-
-  choosingBoards.appendChild(startGameButtonContainer);
-  choosingBoards.appendChild(returnToStartMenuContainer);
+  clearButton.addEventListener("click", () => {
+    selectionBoard.classList.remove("hidden");
+    restartShips(selectionBoard);
+  });
+  boardControlsContainer.appendChild(randomizeButtonContainer);
+  boardControlsContainer.appendChild(clearButtonContainer);
 
   if (twoPlayers) {
     const controlButtonsContainer = document.createElement("div");
     controlButtonsContainer.classList.add("controlButtonsContainer");
-    choosingBoards.appendChild(controlButtonsContainer);
+    choosingContainer.appendChild(controlButtonsContainer);
+
+    const returnToStartMenuContainer = document.createElement("div");
+    createReturnToStartMenuButton(returnToStartMenuContainer, true);
+
+    const startGameButtonContainer = document.createElement("div");
+    createStartGameButton(startGameButtonContainer);
+
+    controlButtonsContainer.appendChild(returnToStartMenuContainer);
+    controlButtonsContainer.appendChild(startGameButtonContainer);
 
     const hideFirstPlayer = document.createElement("button");
     hideFirstPlayer.id = "hideFirstPlayer";
@@ -194,10 +215,16 @@ export default function playerMenu(twoPlayers) {
     const playerTwoContainer = document.createElement("div");
     playerTwoContainer.classList.add("playerTwoContainer");
 
+    const boardControlsContainer2 = document.createElement("div");
+    boardControlsContainer2.classList.add("boardControlsContainer");
+    boardControlsContainer2.classList.add("hidden");
+
     hideFirstPlayer.addEventListener("click", () => {
       if (checkFirstPlayerShips()) {
         hideCells("human");
         selectionBoard2.classList.remove("hidden");
+        boardControlsContainer2.classList.remove("hidden");
+        boardControlsContainer.classList.add("hidden");
         hideFirstPlayer.style.display = "none";
         hideSecondPlayer.style.display = "block";
       }
@@ -206,19 +233,22 @@ export default function playerMenu(twoPlayers) {
     hideSecondPlayer.addEventListener("click", () => {
       if (checkSecondPlayerShips()) {
         hideCells("human2");
-        hideSecondPlayer.style.display = "none";
+        boardControlsContainer2.classList.add("hidden");
+        hideSecondPlayer.classList.add("hidden");
       }
     });
 
     controlButtonsContainer.appendChild(hideFirstPlayer);
     controlButtonsContainer.appendChild(hideSecondPlayer);
 
-    choosingBoards.appendChild(playerTwoContainer);
+    choosingContainer.appendChild(playerTwoContainer);
 
     playerTwoContainer.appendChild(selectionBoard2);
     createShips(selectionBoard2);
 
     const playerBoard2 = createGameBoard("human2", playerTwoContainer);
+
+    playerTwoContainer.appendChild(boardControlsContainer2);
 
     const randomizeButtonContainer2 = document.createElement("div");
     const randomizeButton2 = createRandomizeButton(
@@ -231,10 +261,15 @@ export default function playerMenu(twoPlayers) {
 
     const clearButtonContainer2 = document.createElement("div");
     const clearButton2 = createClearButton(clearButtonContainer2, true);
-    clearButton2.addEventListener("click", () => restartShips(selectionBoard2));
+    clearButton2.addEventListener("click", () => {
+      selectionBoard2.classList.remove("hidden");
+      restartShips(selectionBoard2);
+    });
 
-    playerTwoContainer.appendChild(randomizeButtonContainer2);
-    playerTwoContainer.appendChild(clearButtonContainer2);
+    boardControlsContainer2.appendChild(randomizeButtonContainer2);
+    boardControlsContainer2.appendChild(clearButtonContainer2);
+  } else {
+    playerOneContainer.classList.add("oneLayout");
   }
 
   const cells = document.querySelectorAll(".cell");
@@ -247,5 +282,5 @@ export default function playerMenu(twoPlayers) {
     cell.addEventListener("drop", handleDrop);
   });
 
-  return playerMenuContainer;
+  return selectMenuContainer;
 }

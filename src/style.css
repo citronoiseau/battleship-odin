@@ -6,6 +6,24 @@
   box-sizing: border-box;
 }
 
+button {
+  font-family: "Englebert", cursive;
+  background-color: #777b76;
+  font-size: min(5vw, 1.5rem);
+  letter-spacing: 0.2rem;
+  color: #f6f5e3;
+  border: none;
+  padding: 20px;
+  border-radius: 20px;
+  margin: 0 15px 0 15px;
+  transition: 0.2s ease-in-out;
+  width: 300px;
+}
+button:hover {
+  background-color: #999d98;
+  transform: translateY(-5px);
+}
+
 /* starting menu style */
 
 .startMenuContainer {
@@ -33,27 +51,6 @@
   gap: 15px;
 }
 
-.buttonContainer button,
-#confirmButton {
-  font-family: "Englebert", cursive;
-  background-color: #777b76;
-  font-size: min(5vw, 1.5rem);
-  letter-spacing: 0.2rem;
-  color: #f6f5e3;
-  border: none;
-  padding: 20px;
-  border-radius: 20px;
-  margin: 0 15px 0 15px;
-  transition: 0.2s ease-in-out;
-  width: 300px;
-}
-
-.buttonContainer button:hover,
-#confirmButton:hover {
-  background-color: #999d98;
-  transform: translateY(-5px);
-}
-
 .buttonContainer button:active {
   background-color: #b6bcb5;
 }
@@ -77,7 +74,9 @@
   border: none;
   padding: 15px;
   transition: all 0.2s ease-in;
-  border-radius: 0px 15px 0 15px;
+  border-radius: 0 0 0 15px;
+  max-width: 100px;
+  margin: 0;
 }
 
 #closeButton img {
@@ -108,7 +107,7 @@
   background-color: #394f41;
   color: #f6f5e3;
   width: 60vw;
-  height: 50vh;
+  height: 60vh;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -155,26 +154,87 @@
   font-size: min(3vw, 1.2rem);
   width: 220px;
 }
-@media (max-width: 700px) {
-  .startMenuContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .dialog {
-    padding: 30px;
-  }
-}
 
 /* selecting menu style */
 
 .selectMenuContainer {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  justify-content: center;
 }
 
+.playerOneContainer.oneLayout {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-direction: row-reverse;
+}
+
+.screenControlsContainer,
+.boardControlsContainer {
+  margin: 10px 0;
+  display: flex;
+  transition: all 0.3s ease-in-out;
+}
+
+.playerOneContainer.oneLayout .boardControlsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.playerOneContainer.oneLayout .selectionBoard {
+  max-width: 380px;
+}
+
+.boardControlsContainer button {
+  font-size: 0.9rem;
+  width: min(30vw, 200px);
+  opacity: 1;
+  visibility: visible;
+}
+
+.boardControlsContainer.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.controlButtonsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.screenControlsContainer button,
+.controlButtonsContainer button {
+  font-size: min(0.9rem, 1.2rem);
+  width: min(40vw, 300px);
+}
+
+.choosingContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.choosingBoards {
+  display: flex;
+  flex-wrap: wrap;
+}
 .selectionBoard {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 10px;
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.selectionBoard.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .shipContainer > div.rotated {
@@ -191,11 +251,14 @@
   gap: 80px;
   flex-wrap: wrap;
 }
-
-.gameboardContainer {
-  margin: 20px;
+#hideSecondPlayer {
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
 }
-
+#hideSecondPlayer.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
 .gameboard {
   display: grid;
   grid-template-areas: "xNumbers xNumbers" "yNumbers cells";
@@ -242,18 +305,18 @@
 .cell:hover,
 .cell.human.ship.hidden:hover,
 .cell.human2.ship.hidden:hover {
-  background-color: #cfcfcf;
+  background-color: #00000066;
   transition: all 0.1s ease-out;
 }
 .cell.human.ship.hidden,
 .cell.human2.ship.hidden {
-  background-color: #e0e0e0;
+  background-color: #00000000;
   border: 1px solid #c2c2c2;
 }
 .cell.human.ship,
 .cell.human2.ship {
-  background-color: #202020;
-  border: 1px solid #202020;
+  background-color: #5f5f5f;
+  border: 1px solid #c2c2c2;
 }
 .cell.human.ship.hit,
 .cell.human2.ship.hit {
@@ -273,13 +336,42 @@
   opacity: 0.8;
 }
 .highlighted {
-  background-color: lightblue;
+  background-color: #394f4152;
 }
 
-.choosingBoards {
-  display: flex;
-  flex-wrap: wrap;
+@media (max-width: 700px) {
+  .startMenuContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .dialog {
+    padding: 30px;
+  }
+  .cell,
+  .shipPart {
+    width: 35px;
+    height: 35px;
+    border: 1px solid #c2c2c2;
+  }
+  .playerOneContainer {
+    margin-top: 20px;
+  }
+  .playerOneContainer,
+  .playerTwoContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 }
-.selectionBoard.hidden {
-  visibility: hidden;
+
+@media (max-width: 1200px) {
+  .playerOneContainer.oneLayout {
+    display: flex;
+    flex-direction: column;
+  }
+  .playerOneContainer.oneLayout .boardControlsContainer {
+    display: flex;
+    flex-direction: row;
+  }
 }

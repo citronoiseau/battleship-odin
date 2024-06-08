@@ -196,8 +196,8 @@ export default function playerMenu(twoPlayers) {
     const startGameButtonContainer = document.createElement("div");
     createStartGameButton(startGameButtonContainer);
 
-    controlButtonsContainer.appendChild(returnToStartMenuContainer);
     controlButtonsContainer.appendChild(startGameButtonContainer);
+    controlButtonsContainer.appendChild(returnToStartMenuContainer);
 
     const hideFirstPlayer = document.createElement("button");
     hideFirstPlayer.id = "hideFirstPlayer";

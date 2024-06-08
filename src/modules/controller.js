@@ -432,9 +432,7 @@ const handleRounds = (function () {
 
     if (gameStyle === "oneByOne") {
       handlePlayers.switchTurn();
-      if (gameMode === "playerVsPlayer") {
-        changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
-      }
+      changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
       renderBoard(waitingPlayer.board, waitingPlayer.type);
       if (waitingPlayer.type === "computer") {
         smartComputer.playSmartComputerRound();
@@ -630,6 +628,7 @@ export const gameController = function () {
   if (player2.type === "computer") {
     randomizeShips(player2.board, player2.type);
     renderBoard(player1.board, player1.type);
+    changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
   }
   if (player2.type === "human2") {
     renderBoard(player1.board, player1.type);

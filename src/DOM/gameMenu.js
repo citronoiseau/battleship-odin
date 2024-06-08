@@ -23,16 +23,22 @@ export function gameMenu(twoPlayers) {
 
   const message = document.createElement("div");
   message.classList.add("turnMessage");
+  message.classList.add("hidden");
   infoContainer.appendChild(message);
 
   const boardsContainer = document.createElement("div");
   boardsContainer.classList.add("boardsContainer");
   gameContainer.appendChild(boardsContainer);
 
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.classList.add("buttonsContainer");
+  gameContainer.appendChild(buttonsContainer);
+
   const playerBoard = createGameBoard("human", boardsContainer);
   if (twoPlayers) {
+    message.classList.remove("hidden");
     const controlButtonsContainer = document.createElement("div");
-    gameContainer.appendChild(controlButtonsContainer);
+    buttonsContainer.appendChild(controlButtonsContainer);
 
     const passTurnButton = document.createElement("button");
     passTurnButton.textContent = "Pass turn";
@@ -83,7 +89,7 @@ export function gameMenu(twoPlayers) {
   const returnToStartMenuContainer = document.createElement("div");
   createReturnToStartMenuButton(returnToStartMenuContainer);
 
-  gameContainer.appendChild(restartGameButtonContainer);
-  gameContainer.appendChild(returnToStartMenuContainer);
+  buttonsContainer.appendChild(restartGameButtonContainer);
+  buttonsContainer.appendChild(returnToStartMenuContainer);
   return gameContainer;
 }

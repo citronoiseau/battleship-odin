@@ -372,7 +372,9 @@ button:hover {
 .hit {
   pointer-events: none;
   background-image: url("icons/hit.svg");
+  background-position: center;
 }
+
 .cell.computer.ship.hit {
   background-color: #006e1a;
   border: 1px solid #006e1a;
@@ -429,8 +431,8 @@ button:hover {
   }
   .cell,
   .shipPart {
-    width: 35px;
-    height: 35px;
+    width: 30px;
+    height: 30px;
   }
   .playerOneContainer {
     margin-top: 20px;

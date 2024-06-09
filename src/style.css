@@ -434,6 +434,9 @@ button:hover {
     width: 30px;
     height: 30px;
   }
+  .hit {
+    background-image: url("icons/hit2.svg");
+  }
   .playerOneContainer {
     margin-top: 20px;
   }

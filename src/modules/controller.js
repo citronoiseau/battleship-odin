@@ -384,7 +384,6 @@ const smartComputer = (function () {
           computerMemory.directionsTried[computerMemory.direction] = true;
         }
       }
-      handleRounds.checkWin();
 
       handleRounds.switchTurn(x, y);
     }
@@ -430,32 +429,40 @@ const handleRounds = (function () {
     const gameStyle = gameParams.getGameStyle();
     const gameMode = gameParams.getGameMode();
 
-    if (gameStyle === "oneByOne") {
-      handlePlayers.switchTurn();
-      changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
-      renderBoard(waitingPlayer.board, waitingPlayer.type);
-      if (waitingPlayer.type === "computer") {
-        smartComputer.playSmartComputerRound();
-      }
-    }
-    if (gameStyle === "untilMiss") {
-      if (!waitingPlayer.board.board[x][y].ship) {
+    if (handleRounds.checkWin()) {
+      changeMessage(`${handlePlayers.getActivePlayer().name} won!`);
+    } else {
+      if (gameStyle === "oneByOne") {
         handlePlayers.switchTurn();
-        if (gameMode === "playerVsPlayer") {
-          changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
-        }
+        changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
         renderBoard(waitingPlayer.board, waitingPlayer.type);
         if (waitingPlayer.type === "computer") {
-          smartComputer.playSmartComputerRound();
-          renderBoard(waitingPlayer.board, waitingPlayer.type);
-        }
-      }
-      if (waitingPlayer.board.board[x][y].ship) {
-        if (activePlayer.type === "computer") {
           setTimeout(() => {
             smartComputer.playSmartComputerRound();
-          }, 800);
+          }, 600);
+        }
+      }
+      if (gameStyle === "untilMiss") {
+        if (!waitingPlayer.board.board[x][y].ship) {
+          handlePlayers.switchTurn();
+
+          changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
+
           renderBoard(waitingPlayer.board, waitingPlayer.type);
+          if (waitingPlayer.type === "computer") {
+            setTimeout(() => {
+              smartComputer.playSmartComputerRound();
+            }, 600);
+            renderBoard(waitingPlayer.board, waitingPlayer.type);
+          }
+        }
+        if (waitingPlayer.board.board[x][y].ship) {
+          if (activePlayer.type === "computer") {
+            setTimeout(() => {
+              smartComputer.playSmartComputerRound();
+            }, 800);
+            renderBoard(waitingPlayer.board, waitingPlayer.type);
+          }
         }
       }
     }
@@ -519,7 +526,6 @@ export function registerPlayerHit(cell) {
       const x = parseInt(cell.getAttribute("data-row"), 10);
       const y = parseInt(cell.getAttribute("data-column"), 10);
       waitingPlayerBoard.receiveAttack(x, y);
-      handleRounds.checkWin();
       handleRounds.switchTurn(x, y);
     }
   } else {
@@ -568,8 +574,8 @@ export function restartGame() {
   handleRounds.restartRounds();
   smartComputer.restartComputerMemory(true);
   if (
-    handlePlayers.activePlayer === "computer" ||
-    handlePlayers.activePlayer === "human2"
+    handlePlayers.getActivePlayer().type === "computer" ||
+    handlePlayers.getActivePlayer().type === "human2"
   ) {
     handlePlayers.switchTurn();
   }

@@ -23,7 +23,6 @@ export function gameMenu(twoPlayers) {
 
   const message = document.createElement("div");
   message.classList.add("turnMessage");
-  message.classList.add("hidden");
   infoContainer.appendChild(message);
 
   const boardsContainer = document.createElement("div");

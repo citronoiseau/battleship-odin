@@ -169,11 +169,17 @@ button:hover {
 
 .choosingContainer {
   padding: 30px;
-  padding-bottom: 68px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+}
+.helpingMessageContainer {
+  font-family: "Indie Flower", cursive;
+  padding: 20px;
+  font-size: min(10vw, 1.5rem);
+  font-weight: 600;
+  color: #394f41;
 }
 
 .playerOneContainer.oneLayout {
@@ -192,6 +198,7 @@ button:hover {
   transition: all 0.3s ease-in-out;
 }
 .boardControlsContainer {
+  padding-left: 15px;
   margin: 20px 0;
 }
 .playerOneContainer.oneLayout .boardControlsContainer {
@@ -203,7 +210,13 @@ button:hover {
 .playerOneContainer.oneLayout .selectionBoard {
   max-width: 380px;
 }
-
+.ships {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 .boardControlsContainer button {
   font-size: 0.9rem;
   width: min(30vw, 200px);
@@ -224,7 +237,7 @@ button:hover {
 .controlButtonsContainer button,
 .buttonsContainer button {
   font-size: min(4vw, 1.4rem);
-  width: min(40vw, 300px);
+  width: min(40vw, 350px);
 }
 
 .choosingBoards {
@@ -232,15 +245,28 @@ button:hover {
   flex-wrap: wrap;
 }
 .selectionBoard {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
   opacity: 1;
+  flex-direction: column;
+  display: flex;
   transition: all 0.3s ease-in-out;
+  align-items: center;
+  gap: 10px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-color: #5f5f5f16;
 }
-
+.selectionBoard .boardName {
+  font-family: "Englebert", cursive;
+  background-color: #777b76;
+  font-size: min(5vw, 1.5rem);
+  letter-spacing: 0.2rem;
+  color: #f6f5e3;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
 .selectionBoard.hidden {
   opacity: 0;
   visibility: hidden;
@@ -331,7 +357,7 @@ button:hover {
 .cell.human.ship.hidden,
 .cell.human2.ship.hidden {
   background-color: #00000000;
-  border: 1px solid #c2c2c2;
+  border: 2px solid #62afb4;
 }
 .cell.human.ship,
 .cell.human2.ship {
@@ -404,7 +430,6 @@ button:hover {
   .shipPart {
     width: 35px;
     height: 35px;
-    border: 1px solid #c2c2c2;
   }
   .playerOneContainer {
     margin-top: 20px;
@@ -415,9 +440,14 @@ button:hover {
     flex-direction: column;
     align-items: center;
   }
-  .selectionBoard {
-    max-width: 300px;
+  .selectionBoard,
+  .helpingMessageContainer {
+    display: none;
   }
+  .choosingContainer {
+    padding: 0;
+  }
+
   .gameboard {
     padding-left: 0px;
   }
@@ -427,6 +457,7 @@ button:hover {
   .playerOneContainer.oneLayout {
     display: flex;
     flex-direction: column;
+    padding-bottom: 200px;
   }
   .playerOneContainer.oneLayout .boardControlsContainer {
     display: flex;

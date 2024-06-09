@@ -8,15 +8,20 @@ function listCreator(text, parent) {
 
 function createFirstParagraph(parent) {
   const firstParagraph = listCreator(
-    "On PC, players can manually place their ships by dragging and dropping them onto their board, or they can opt for a randomized placement. To rotate a ship, simply right-click on it.",
+    "On PC, players can manually place their ships by dragging and dropping them onto their board, or they can opt for a randomized placement.",
     parent,
   );
 
   const secondParagraph = listCreator(
-    "On phones, ship placement is limited to randomization. Players cannot manually position their ships and must rely on the randomized placement feature.",
+    "To rotate a ship, right-click on it.",
     parent,
   );
+
   const thirdParagraph = listCreator(
+    "On phones, ship placement is limited to randomization.",
+    parent,
+  );
+  const fourthParagraph = listCreator(
     "In a two-player game, the first player clicks 'Pass selecting to other player' after placing their ships. The second player places their ships and clicks 'Finish selecting'. Finally, the first player clicks 'Start your game' to begin.",
     parent,
   );

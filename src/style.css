@@ -169,6 +169,7 @@ button:hover {
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #b0d6c9;
+  min-height: 100vh;
 }
 
 .choosingContainer {
@@ -401,6 +402,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
 }
 .infoContainer {
   font-family: "Indie Flower", cursive;

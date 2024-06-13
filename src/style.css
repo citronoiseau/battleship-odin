@@ -66,6 +66,7 @@ button:hover {
   color: #63846f;
 }
 .closeButtonContainer {
+  transform: translateY(-100%);
   position: absolute;
   top: 0;
   right: 0;
@@ -94,6 +95,7 @@ button:hover {
 }
 
 .dialog {
+  position:;
   top: 50%;
   height: 0;
   overflow: hidden;
@@ -178,6 +180,7 @@ button:hover {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  gap: 10px;
 }
 .helpingMessageContainer {
   font-family: "Indie Flower", cursive;
@@ -192,6 +195,8 @@ button:hover {
   align-items: center;
   gap: 20px;
   flex-direction: row-reverse;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .screenControlsContainer {
   margin: 50px 0 20px 0;
@@ -212,9 +217,6 @@ button:hover {
   gap: 10px;
 }
 
-.playerOneContainer.oneLayout .selectionBoard {
-  max-width: 380px;
-}
 .ships {
   display: flex;
   align-items: center;
@@ -259,7 +261,8 @@ button:hover {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   background-color: #5f5f5f16;
-  padding: 5px;
+  width: 500px;
+  min-height: 270px;
 }
 .selectionBoard .boardName {
   font-family: "Englebert", cursive;

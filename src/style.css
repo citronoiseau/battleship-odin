@@ -152,7 +152,11 @@ button:hover {
   text-align: center;
 }
 .dialogParagraph {
+  padding: 10px;
   font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   text-align: justify;
 }
 

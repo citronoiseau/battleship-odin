@@ -74,7 +74,7 @@ export default function createDialog() {
   firstParagraphTitle.classList.add("paragraphTitle");
   dialog.appendChild(firstParagraphTitle);
 
-  const firstParagraph = document.createElement("ul");
+  const firstParagraph = document.createElement("ol");
   firstParagraph.classList.add("dialogParagraph");
   dialog.appendChild(firstParagraph);
 
@@ -86,7 +86,7 @@ export default function createDialog() {
   secondParagraphTitle.classList.add("paragraphTitle");
   dialog.appendChild(secondParagraphTitle);
 
-  const secondParagraph = document.createElement("ul");
+  const secondParagraph = document.createElement("ol");
   secondParagraph.classList.add("dialogParagraph");
   dialog.appendChild(secondParagraph);
 

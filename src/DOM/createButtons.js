@@ -135,7 +135,6 @@ export function createReturnToStartMenuButton(parent, fromMenu) {
   );
 
   returnButton.addEventListener("click", () => {
-    console.log(fromMenu);
     if (!fromMenu) {
       restartGame();
     }

@@ -165,14 +165,6 @@ export default function playerMenu(twoPlayers) {
     screenControlsContainer.appendChild(startGameButtonContainer);
   }
 
-  const helpingMessageContainer = document.createElement("div");
-  helpingMessageContainer.classList.add("helpingMessageContainer");
-  selectMenuContainer.appendChild(helpingMessageContainer);
-
-  const helpingMessage = document.createElement("div");
-  helpingMessage.textContent = "To rotate a ship right click on it";
-  helpingMessageContainer.appendChild(helpingMessage);
-
   const choosingContainer = document.createElement("div");
   choosingContainer.classList.add("choosingContainer");
   selectMenuContainer.appendChild(choosingContainer);
@@ -185,10 +177,19 @@ export default function playerMenu(twoPlayers) {
   selectionBoard.classList.add("selectionBoard");
   playerOneContainer.appendChild(selectionBoard);
 
+  const boardTextContainer = document.createElement("div");
+  boardTextContainer.classList.add("boardTextContainer");
+  selectionBoard.appendChild(boardTextContainer);
+
   const boardName = document.createElement("div");
   boardName.classList.add("boardName");
   boardName.textContent = "Your ships";
-  selectionBoard.appendChild(boardName);
+  boardTextContainer.appendChild(boardName);
+
+  const helpingMessage = document.createElement("div");
+  helpingMessage.classList.add("helpingMessage");
+  helpingMessage.textContent = "To rotate a ship right click on it";
+  boardTextContainer.appendChild(helpingMessage);
 
   const ships = document.createElement("div");
   ships.classList.add("ships");
@@ -241,13 +242,21 @@ export default function playerMenu(twoPlayers) {
     selectionBoard2.classList.add("selectionBoard");
     selectionBoard2.classList.add("hidden");
 
+    const boardTextContainer2 = document.createElement("div");
+    boardTextContainer2.classList.add("boardTextContainer");
+    selectionBoard2.appendChild(boardTextContainer2);
+
     const boardName2 = document.createElement("div");
     boardName2.classList.add("boardName");
     boardName2.textContent = "Your ships";
-    selectionBoard2.appendChild(boardName2);
+    boardTextContainer2.appendChild(boardName2);
+
+    const helpingMessage2 = document.createElement("div");
+    helpingMessage2.classList.add("helpingMessage");
+    helpingMessage2.textContent = "To rotate a ship right click on it";
+    boardTextContainer2.appendChild(helpingMessage2);
 
     const ships2 = document.createElement("div");
-    console.log(ships2);
     ships2.classList.add("ships");
     selectionBoard2.appendChild(ships2);
     createShips(ships2);

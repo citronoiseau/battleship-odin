@@ -59,8 +59,10 @@ export function renderBoard(board, typeOfPlayer) {
 
       if (board.board[i][j].ship) {
         cell.classList.add("ship");
+        cell.dataset.id = board.board[i][j].ship.id;
       } else {
         cell.classList.remove("ship");
+        cell.removeAttribute("data-id");
       }
 
       if (board.board[i][j].hit) {

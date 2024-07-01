@@ -540,14 +540,25 @@ export function placePlayerShip(shipId, x, y, isHorizontal, length, type) {
   );
 
   const playerBoard = neededPlayer.board;
-
-  playerBoard.createShip(shipId, length);
-  const placed = playerBoard.placeShip(shipId, x, y, isHorizontal);
+  const id = Number(shipId);
+  playerBoard.createShip(id, length);
+  const placed = playerBoard.placeShip(id, x, y, isHorizontal);
   if (placed) {
     renderBoard(playerBoard, neededPlayer.type);
     return true;
   }
   return false;
+}
+
+export function removePlayerShip(shipId, type) {
+  const id = Number(shipId);
+  const [player1, player2] = handlePlayers.getPlayers();
+  const neededPlayer = [player1, player2].find(
+    (player) => player.type === type,
+  );
+  const playerBoard = neededPlayer.board;
+  playerBoard.removeShip(id);
+  renderBoard(playerBoard, neededPlayer.type);
 }
 
 export function randomizeShips(board, typeOfPlayer) {

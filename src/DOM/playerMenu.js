@@ -8,6 +8,7 @@ import {
 import { createGameBoard, hideCells } from "./boardDOM";
 import {
   placePlayerShip,
+  removePlayerShip,
   checkFirstPlayerShips,
   checkSecondPlayerShips,
 } from "../modules/controller";
@@ -73,6 +74,22 @@ function handleDrop(event) {
       }
     }
   }
+}
+
+function removeShip(cell) {
+  const shipId = cell.dataset.id;
+  const board = cell.closest(".gameboard");
+  const gameboardContainer = board.closest(".gameboardContainer");
+  const parentContainer = gameboardContainer.parentElement;
+  const selectionBoard = parentContainer.querySelector(".selectionBoard");
+
+  removePlayerShip(shipId, board.id);
+
+  if (selectionBoard.classList.contains("hidden")) {
+    selectionBoard.classList.remove("hidden");
+  }
+  const placedShip = selectionBoard.querySelector(`[data-id="${shipId}"]`);
+  placedShip.classList.remove("hidden");
 }
 
 function rotateShip(ship) {
@@ -143,6 +160,12 @@ function restartShips(selectionBoard) {
 
 function hideShips(container) {
   container.classList.add("hidden");
+  const ships = container.querySelectorAll(".ship");
+  console.log(ships);
+  ships.forEach((ship) => {
+    ship.classList.add("hidden");
+    console.log(`${ship} is going hidden`);
+  });
 }
 
 export default function playerMenu(twoPlayers) {
@@ -186,10 +209,20 @@ export default function playerMenu(twoPlayers) {
   boardName.textContent = "Your ships";
   boardTextContainer.appendChild(boardName);
 
+  const helpingContainer = document.createElement("div");
+  helpingContainer.classList.add("helpingContainer");
+  boardTextContainer.appendChild(helpingContainer);
+
   const helpingMessage = document.createElement("div");
   helpingMessage.classList.add("helpingMessage");
-  helpingMessage.textContent = "To rotate a ship right click on it";
-  boardTextContainer.appendChild(helpingMessage);
+  helpingMessage.textContent = "• To rotate a ship right click on it";
+  helpingContainer.appendChild(helpingMessage);
+
+  const additionalHelpingMessage = document.createElement("div");
+  additionalHelpingMessage.classList.add("helpingMessage");
+  additionalHelpingMessage.textContent =
+    "• To remove a placed ship left click on board";
+  helpingContainer.appendChild(additionalHelpingMessage);
 
   const ships = document.createElement("div");
   ships.classList.add("ships");
@@ -251,10 +284,20 @@ export default function playerMenu(twoPlayers) {
     boardName2.textContent = "Your ships";
     boardTextContainer2.appendChild(boardName2);
 
+    const helpingContainer2 = document.createElement("div");
+    helpingContainer2.classList.add("helpingContainer");
+    boardTextContainer2.appendChild(helpingContainer2);
+
     const helpingMessage2 = document.createElement("div");
     helpingMessage2.classList.add("helpingMessage");
-    helpingMessage2.textContent = "To rotate a ship right click on it";
-    boardTextContainer2.appendChild(helpingMessage2);
+    helpingMessage2.textContent = "• To rotate a ship right click on it";
+    helpingContainer2.appendChild(helpingMessage2);
+
+    const additionalHelpingMessage2 = document.createElement("div");
+    additionalHelpingMessage2.classList.add("helpingMessage");
+    additionalHelpingMessage2.textContent =
+      "• To remove a placed ship left click on board";
+    helpingContainer2.appendChild(additionalHelpingMessage2);
 
     const ships2 = document.createElement("div");
     ships2.classList.add("ships");
@@ -328,6 +371,12 @@ export default function playerMenu(twoPlayers) {
     cell.addEventListener("dragover", handleDragOver);
     cell.addEventListener("dragleave", handleDragLeave);
     cell.addEventListener("drop", handleDrop);
+
+    cell.addEventListener("click", () => {
+      if (cell.dataset.id) {
+        removeShip(cell);
+      }
+    });
   });
 
   return selectMenuContainer;

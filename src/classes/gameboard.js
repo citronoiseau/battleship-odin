@@ -39,7 +39,7 @@ export default class GameBoard {
       ...createBattleShips(),
       ...createCarrier(),
     );
-    let id = 0;
+    let id = 1;
     for (let i = 0; i < ships.length; i++) {
       ships[i].setId(id);
       id += 1;

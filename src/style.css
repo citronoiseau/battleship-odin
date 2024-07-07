@@ -376,22 +376,27 @@ button:hover {
 }
 .cell.human.ship.hit,
 .cell.human2.ship.hit {
-  background-color: #f95e5e;
-  border: 1px solid #f95e5e;
+  background-color: #f95e5ed5;
+  border: 1px solid #f95e5e00;
   background-image: url("icons/hit.svg");
   background-position: center;
 }
-.hit {
+.cell.computer.ship.hit {
+  background-color: #006e1ac8;
+  border: 1px solid #006e1a00;
+  background-image: url("icons/hit.svg");
+  background-position: center;
+}
+.cell.hit {
   pointer-events: none;
   background-color: #3e6f698e;
 }
 
-.cell.computer.ship.hit {
-  background-color: #006e1a;
-  border: 1px solid #006e1a;
-  background-image: url("icons/hit.svg");
-  background-position: center;
+.cell {
+  transition: background-color 0.3s ease-in-out;
+  background-color: #00000000;
 }
+
 .cell.dragging {
   border: 2px dashed #000;
   opacity: 0.8;

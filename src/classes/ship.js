@@ -27,4 +27,8 @@ export default class Ship {
   getId() {
     return this.id;
   }
+
+  getLength() {
+    return this.length;
+  }
 }

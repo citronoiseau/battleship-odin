@@ -10,7 +10,6 @@ button {
   font-family: "Inconsolata", monospace;
   background-color: #777b76;
   font-size: min(5vw, 1.5rem);
-  letter-spacing: 0.2rem;
   color: #f6f5e3;
   border: none;
   padding: 20px;
@@ -267,7 +266,6 @@ button:hover {
   font-family: "Inconsolata", monospace;
   background-color: #777b76;
   font-size: min(5vw, 1.5rem);
-  letter-spacing: 0.2rem;
   color: #f6f5e3;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -380,16 +378,19 @@ button:hover {
 .cell.human2.ship.hit {
   background-color: #f95e5e;
   border: 1px solid #f95e5e;
+  background-image: url("icons/hit.svg");
+  background-position: center;
 }
 .hit {
   pointer-events: none;
-  background-image: url("icons/hit.svg");
-  background-position: center;
+  background-color: #3e6f698e;
 }
 
 .cell.computer.ship.hit {
   background-color: #006e1a;
   border: 1px solid #006e1a;
+  background-image: url("icons/hit.svg");
+  background-position: center;
 }
 .cell.dragging {
   border: 2px dashed #000;

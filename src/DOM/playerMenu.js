@@ -161,10 +161,8 @@ function restartShips(selectionBoard) {
 function hideShips(container) {
   container.classList.add("hidden");
   const ships = container.querySelectorAll(".ship");
-  console.log(ships);
   ships.forEach((ship) => {
     ship.classList.add("hidden");
-    console.log(`${ship} is going hidden`);
   });
 }
 
@@ -221,7 +219,7 @@ export default function playerMenu(twoPlayers) {
   const additionalHelpingMessage = document.createElement("div");
   additionalHelpingMessage.classList.add("helpingMessage");
   additionalHelpingMessage.textContent =
-    "• To remove a placed ship left click on board";
+    "• To remove a placed ship left click on the board";
   helpingContainer.appendChild(additionalHelpingMessage);
 
   const ships = document.createElement("div");
@@ -296,7 +294,7 @@ export default function playerMenu(twoPlayers) {
     const additionalHelpingMessage2 = document.createElement("div");
     additionalHelpingMessage2.classList.add("helpingMessage");
     additionalHelpingMessage2.textContent =
-      "• To remove a placed ship left click on board";
+      "• To remove a placed ship left click on the board";
     helpingContainer2.appendChild(additionalHelpingMessage2);
 
     const ships2 = document.createElement("div");

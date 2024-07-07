@@ -96,7 +96,6 @@ const smartComputer = (function () {
     initialY: null,
     isLastHit: false,
     numberOfHits: 0,
-    neighborCells: new Set(),
     shipCounters: {
       5: 1,
       4: 2,
@@ -115,7 +114,6 @@ const smartComputer = (function () {
     computerMemory.isLastHit = false;
     computerMemory.numberOfHits = 0;
     if (fullRestart) {
-      computerMemory.neighborCells = new Set();
       computerMemory.shipCounters = {
         5: 1,
         4: 2,
@@ -207,74 +205,12 @@ const smartComputer = (function () {
     return nextLargestLength !== undefined ? nextLargestLength : null;
   }
 
-  function checkCell(x, y) {
-    const key = `${x},${y}`;
-    return computerMemory.neighborCells.has(key);
-  }
-
-  function addCell(x, y) {
-    const key = `${x},${y}`;
-    computerMemory.neighborCells.add(key);
-  }
-
-  function checkoutNeighbourCells(x, y, direction, shipLength) {
-    if (direction === "right") {
-      for (let i = -1; i <= 1; i++) {
-        for (let j = 0; j <= shipLength + 1; j++) {
-          const saveX = x + i;
-          const saveY = y + j;
-          addCell(saveX, saveY);
-        }
-      }
-    }
-    if (direction === "down") {
-      for (let i = -1; i <= 1; i++) {
-        for (let j = 0; j <= shipLength + 1; j++) {
-          const saveX = x + j;
-          const saveY = y + i;
-
-          addCell(saveX, saveY);
-        }
-      }
-    }
-  }
-
-  function findFirstShipCell(x, y, shipLength, isHorizontal) {
-    const waitingPlayer = handlePlayers.getWaitingPlayer();
-
-    if (isHorizontal) {
-      for (let i = 1; i <= shipLength; i++) {
-        const firstY = y - i;
-        if (firstY < 0 || firstY > 9) {
-          checkoutNeighbourCells(x, firstY, "right", shipLength);
-          return;
-        }
-        if (!waitingPlayer.board.board[x][firstY].ship) {
-          checkoutNeighbourCells(x, firstY, "right", shipLength);
-          return;
-        }
-      }
-    } else {
-      for (let i = 1; i <= shipLength; i++) {
-        const firstX = x - i;
-        if (firstX < 0 || firstX > 9) {
-          checkoutNeighbourCells(firstX, y, "down", shipLength);
-          return;
-        }
-        if (!waitingPlayer.board.board[firstX][y].ship) {
-          checkoutNeighbourCells(firstX, y, "down", shipLength);
-          return;
-        }
-      }
-    }
-  }
-
   const randomizeCoords = function () {
     const waitingPlayer = handlePlayers.getWaitingPlayer();
     const x = Math.floor(Math.random() * 10);
     const y = Math.floor(Math.random() * 10);
 
-    if (!waitingPlayer.board.board[x][y].hit && !checkCell(x, y)) {
+    if (!waitingPlayer.board.board[x][y].hit) {
       return [x, y];
     }
     return randomizeCoords();
@@ -291,12 +227,6 @@ const smartComputer = (function () {
       ({ x: lastX, y: lastY } = computerMemory.hitStack.pop());
 
       updateShipCounter(maxShipLength);
-      findFirstShipCell(
-        lastX,
-        lastY,
-        computerMemory.numberOfHits,
-        computerMemory.isShipHorizontal,
-      );
       restartComputerMemory();
       return randomizeCoords();
     }
@@ -329,8 +259,7 @@ const smartComputer = (function () {
       while (
         !isValidCell(x, y) ||
         waitingPlayer.board.board[x][y].hit ||
-        computerMemory.directionsTried[computerMemory.direction] ||
-        checkCell(x, y)
+        computerMemory.directionsTried[computerMemory.direction]
       ) {
         computerMemory.directionsTried[computerMemory.direction] = true;
         if (getNextDirection(computerMemory.direction)) {
@@ -343,12 +272,6 @@ const smartComputer = (function () {
           ));
         } else {
           updateShipCounter(computerMemory.numberOfHits);
-          findFirstShipCell(
-            lastX,
-            lastY,
-            computerMemory.numberOfHits,
-            computerMemory.isShipHorizontal,
-          );
           restartComputerMemory();
           return randomizeCoords();
         }

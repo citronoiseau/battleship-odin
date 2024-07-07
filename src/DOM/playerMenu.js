@@ -93,11 +93,26 @@ function removeShip(cell) {
 }
 
 function rotateShip(ship) {
+  const shipContainer = ship.parentElement;
+  const playerType = ship.dataset.player;
+
+  let board;
+  if (playerType === "player1") {
+    board = document.querySelector(".playerOneContainer");
+  }
+  if (playerType === "player2") {
+    board = document.querySelector(".playerTwoContainer");
+  }
+  const shipsVertical = board.querySelector(".ships");
+
+  const shipsHorizontal = board.querySelector(".shipsHorizontal");
   if (ship.classList.contains("rotated")) {
     ship.classList.remove("rotated");
+    shipsVertical.appendChild(shipContainer);
     ship.dataset.isHorizontal = false;
   } else {
     ship.classList.add("rotated");
+    shipsHorizontal.appendChild(shipContainer);
     ship.dataset.isHorizontal = true;
   }
 }
@@ -113,10 +128,19 @@ function createDOMShip(id, length, shipsArr, parent) {
   const ship = document.createElement("div");
   ship.classList.add("ship");
   shipContainer.appendChild(ship);
+  let playerType;
+
+  if (parent.classList.contains("ships")) {
+    playerType = "player1";
+  }
+  if (parent.classList.contains("ships2")) {
+    playerType = "player2";
+  }
 
   ship.dataset.length = length;
   ship.dataset.isHorizontal = false;
   ship.dataset.id = id;
+  ship.dataset.player = playerType;
 
   for (let i = 1; i <= length; i++) {
     const shipPart = document.createElement("div");
@@ -227,6 +251,10 @@ export default function playerMenu(twoPlayers) {
   selectionBoard.appendChild(ships);
   createShips(ships);
 
+  const shipsHorizontal = document.createElement("div");
+  shipsHorizontal.classList.add("shipsHorizontal");
+  selectionBoard.appendChild(shipsHorizontal);
+
   const playerBoard = createGameBoard("human", playerOneContainer);
 
   const boardControlsContainer = document.createElement("div");
@@ -298,9 +326,13 @@ export default function playerMenu(twoPlayers) {
     helpingContainer2.appendChild(additionalHelpingMessage2);
 
     const ships2 = document.createElement("div");
-    ships2.classList.add("ships");
+    ships2.classList.add("ships2");
     selectionBoard2.appendChild(ships2);
     createShips(ships2);
+
+    const shipsHorizontal2 = document.createElement("div");
+    shipsHorizontal2.classList.add("shipsHorizontal");
+    selectionBoard2.appendChild(shipsHorizontal2);
 
     const playerTwoContainer = document.createElement("div");
     playerTwoContainer.classList.add("playerTwoContainer");

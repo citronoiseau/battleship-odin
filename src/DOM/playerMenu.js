@@ -61,18 +61,6 @@ function handleDrop(event) {
   if (placed) {
     const placedShip = selectionBoard.querySelector(`[data-id="${shipId}"]`);
     placedShip.classList.add("hidden");
-    if (board.id === "human") {
-      const shipsArePlaced = checkFirstPlayerShips();
-      if (shipsArePlaced) {
-        selectionBoard.classList.add("hidden");
-      }
-    }
-    if (board.id === "human2") {
-      const shipsArePlaced = checkSecondPlayerShips();
-      if (shipsArePlaced) {
-        selectionBoard.classList.add("hidden");
-      }
-    }
   }
 }
 
@@ -85,9 +73,6 @@ function removeShip(cell) {
 
   removePlayerShip(shipId, board.id);
 
-  if (selectionBoard.classList.contains("hidden")) {
-    selectionBoard.classList.remove("hidden");
-  }
   const placedShip = selectionBoard.querySelector(`[data-id="${shipId}"]`);
   placedShip.classList.remove("hidden");
 }
@@ -151,7 +136,7 @@ function createDOMShip(id, length, shipsArr, parent) {
 
   ship.setAttribute("draggable", true);
   ship.addEventListener("dragstart", handleDragStart);
-  ship.addEventListener("contextmenu", handleRotation);
+  ship.addEventListener("click", handleRotation);
 
   parent.appendChild(shipContainer);
 }
@@ -183,7 +168,6 @@ function restartShips(selectionBoard) {
 }
 
 function hideShips(container) {
-  container.classList.add("hidden");
   const ships = container.querySelectorAll(".ship");
   ships.forEach((ship) => {
     ship.classList.add("hidden");
@@ -237,7 +221,7 @@ export default function playerMenu(twoPlayers) {
 
   const helpingMessage = document.createElement("div");
   helpingMessage.classList.add("helpingMessage");
-  helpingMessage.textContent = "• To rotate a ship right click on it";
+  helpingMessage.textContent = "• To rotate a ship left click on it";
   helpingContainer.appendChild(helpingMessage);
 
   const additionalHelpingMessage = document.createElement("div");
@@ -268,7 +252,6 @@ export default function playerMenu(twoPlayers) {
   const clearButtonContainer = document.createElement("div");
   const clearButton = createClearButton(clearButtonContainer);
   clearButton.addEventListener("click", () => {
-    selectionBoard.classList.remove("hidden");
     restartShips(ships);
   });
   boardControlsContainer.appendChild(randomizeButtonContainer);
@@ -299,7 +282,6 @@ export default function playerMenu(twoPlayers) {
 
     const selectionBoard2 = document.createElement("div");
     selectionBoard2.classList.add("selectionBoard");
-    selectionBoard2.classList.add("hidden");
 
     const boardTextContainer2 = document.createElement("div");
     boardTextContainer2.classList.add("boardTextContainer");
@@ -316,7 +298,7 @@ export default function playerMenu(twoPlayers) {
 
     const helpingMessage2 = document.createElement("div");
     helpingMessage2.classList.add("helpingMessage");
-    helpingMessage2.textContent = "• To rotate a ship right click on it";
+    helpingMessage2.textContent = "• To rotate a ship left click on it";
     helpingContainer2.appendChild(helpingMessage2);
 
     const additionalHelpingMessage2 = document.createElement("div");
@@ -344,7 +326,6 @@ export default function playerMenu(twoPlayers) {
     hideFirstPlayer.addEventListener("click", () => {
       if (checkFirstPlayerShips()) {
         hideCells("human");
-        selectionBoard2.classList.remove("hidden");
         boardControlsContainer2.classList.remove("hidden");
         boardControlsContainer.classList.add("hidden");
         hideFirstPlayer.style.display = "none";
@@ -383,7 +364,6 @@ export default function playerMenu(twoPlayers) {
     const clearButtonContainer2 = document.createElement("div");
     const clearButton2 = createClearButton(clearButtonContainer2, true);
     clearButton2.addEventListener("click", () => {
-      selectionBoard2.classList.remove("hidden");
       restartShips(ships2);
     });
 

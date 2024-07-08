@@ -251,7 +251,6 @@ button:hover {
   flex-wrap: wrap;
 }
 .selectionBoard {
-  opacity: 1;
   flex-direction: column;
   display: flex;
   transition: all 0.3s ease-in-out;
@@ -261,7 +260,7 @@ button:hover {
   border-top-right-radius: 20px;
   background-color: #5f5f5f16;
   width: 500px;
-  min-height: 270px;
+  min-height: 350px;
   padding-bottom: 10px;
 }
 .boardTextContainer,
@@ -279,11 +278,6 @@ button:hover {
 .boardTextContainer .helpingMessage {
   padding-top: 15px;
   font-size: min(5vw, 1.1rem);
-}
-
-.selectionBoard.hidden {
-  opacity: 0;
-  visibility: hidden;
 }
 
 .shipContainer > div.rotated {

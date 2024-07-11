@@ -97,6 +97,8 @@ export default class GameBoard {
       if (!successfulPlacing) {
         this.placeShipsRandomly();
       }
+      ship.setIsHorizontal(isHorizontal);
+      ship.setXY(x, y);
       this.placedShips.add(ship.getId());
     });
   }
@@ -112,15 +114,15 @@ export default class GameBoard {
         for (let i = 0; i <= shipLength - 1; i++) {
           this.board[x][y + i].ship = newShip;
         }
-        return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x}, ${y + shipLength - 1}]`;
       }
       if (!isHorizontal) {
         for (let i = 0; i <= shipLength - 1; i++) {
           this.board[x + i][y].ship = newShip;
         }
-        return `Your ship of length ${shipLength} is positioned at [${x}, ${y}] to [${x + shipLength - 1}, ${y}]`;
       }
       this.placedShips.add(shipId);
+      newShip.setIsHorizontal(isHorizontal);
+      newShip.setXY(x, y);
       return true;
     }
     return false;
@@ -153,7 +155,10 @@ export default class GameBoard {
       this.board[x][y].hit = true;
       if (ship.isSunk()) {
         const shipLength = ship.getLength();
-        this.checkoutNeighborCells(shipLength, x, y);
+        const shipDirection = ship.getIsHorizontal();
+        const shipX = ship.getX();
+        const shipY = ship.getY();
+        this.hitNeighborCells(shipX, shipY, shipDirection, shipLength);
       }
       return;
     }
@@ -168,89 +173,24 @@ export default class GameBoard {
     return false;
   }
 
-  checkoutNeighborCells(length, x, y) {
-    const isHorizontal = this.checkShipDirection(x, y);
-    this.findFirstShipCell(x, y, length, isHorizontal);
-  }
-
-  checkShipDirection(x, y) {
-    if (x === 0) {
-      if (this.board[x + 1][y].ship) {
-        return false;
-      }
-      return true;
-    }
-    if (x === 9) {
-      if (this.board[x - 1][y].ship) {
-        return false;
-      }
-      return true;
-    }
-    if (y === 0) {
-      if (this.board[x][y + 1].ship) {
-        return true;
-      }
-      return false;
-    }
-    if (y === 9) {
-      if (this.board[x][y - 1].ship) {
-        return true;
-      }
-      return false;
-    }
-    if (this.board[x - 1][y].ship || this.board[x + 1][y].ship) {
-      return false;
-    }
-    if (this.board[x][y + 1].ship || this.board[x][y - 1].ship) {
-      return true;
-    }
-  }
-
-  findFirstShipCell(x, y, shipLength, isHorizontal) {
-    if (isHorizontal) {
-      for (let i = 1; i <= shipLength; i++) {
-        const firstY = y - i;
-        if (firstY < 0 || firstY > 9) {
-          this.hitNeighborCells(x, firstY, "right", shipLength);
-          return;
-        }
-        if (!this.board[x][firstY].ship) {
-          this.hitNeighborCells(x, firstY, "right", shipLength);
-          return;
-        }
-      }
-    } else {
-      for (let i = 1; i <= shipLength; i++) {
-        const firstX = x - i;
-        if (firstX < 0 || firstX > 9) {
-          this.hitNeighborCells(firstX, y, "down", shipLength);
-          return;
-        }
-        if (!this.board[firstX][y].ship) {
-          this.hitNeighborCells(firstX, y, "down", shipLength);
-          return;
-        }
-      }
-    }
-  }
-
   hitNeighborCells(x, y, direction, shipLength) {
-    if (direction === "right") {
+    if (direction) {
+      const startY = y - 1;
       for (let i = -1; i <= 1; i++) {
         for (let j = 0; j <= shipLength + 1; j++) {
           const hitX = x + i;
-          const hitY = y + j;
+          const hitY = startY + j;
 
           if (hitX >= 0 && hitX < 10 && hitY >= 0 && hitY < 10) {
             this.board[hitX][hitY].hit = true;
           }
         }
       }
-    }
-    if (direction === "down") {
+    } else {
+      const startX = x - 1;
       for (let i = -1; i <= 1; i++) {
         for (let j = 0; j <= shipLength + 1; j++) {
-          const hitX = x + j;
+          const hitX = startX + j;
           const hitY = y + i;
 
           if (hitX >= 0 && hitX < 10 && hitY >= 0 && hitY < 10) {

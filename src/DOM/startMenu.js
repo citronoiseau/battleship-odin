@@ -5,8 +5,82 @@ import {
 } from "./createButtons";
 
 import createDialog from "./helpMenu";
+import createJoinGameDialog from "./joinGameDialog";
 
 const content = document.querySelector("#content");
+
+function choosingModeButtons() {
+  const buttonContainer = document.querySelector(".buttonContainer");
+  while (buttonContainer.firstChild) {
+    buttonContainer.removeChild(buttonContainer.firstChild);
+  }
+  const singleplayerButton = document.createElement("button");
+  singleplayerButton.textContent = "Singleplayer";
+  buttonContainer.appendChild(singleplayerButton);
+
+  const multiplayerButton = document.createElement("button");
+  multiplayerButton.textContent = "Multiplayer";
+  buttonContainer.appendChild(multiplayerButton);
+
+  multiplayerButton.addEventListener("click", multiplayer);
+  singleplayerButton.addEventListener("click", singleplayer);
+}
+
+function singleplayer() {
+  const buttonContainer = document.querySelector(".buttonContainer");
+  while (buttonContainer.firstChild) {
+    buttonContainer.removeChild(buttonContainer.firstChild);
+  }
+
+  const startGameButtonContainer = document.createElement("div");
+  createInitializeGameButton(startGameButtonContainer);
+
+  const gameModeButtonContainer = document.createElement("div");
+  createGameModeChangeButton(gameModeButtonContainer);
+
+  const gameStyleButtonContainer = document.createElement("div");
+  createGameStyleChangeButton(gameStyleButtonContainer);
+
+  const goBackButton = document.createElement("button");
+  goBackButton.textContent = "Go back!";
+  goBackButton.classList.add("goBackButton");
+
+  goBackButton.addEventListener("click", choosingModeButtons);
+
+  buttonContainer.appendChild(startGameButtonContainer);
+  buttonContainer.appendChild(gameModeButtonContainer);
+  buttonContainer.appendChild(gameStyleButtonContainer);
+  buttonContainer.appendChild(goBackButton);
+}
+
+function multiplayer() {
+  const buttonContainer = document.querySelector(".buttonContainer");
+  while (buttonContainer.firstChild) {
+    buttonContainer.removeChild(buttonContainer.firstChild);
+  }
+  const createGameButton = document.createElement("button");
+  createGameButton.textContent = "Create game";
+
+  const joinGameButton = document.createElement("button");
+  joinGameButton.textContent = "Join game";
+
+  const joinGameDialog = createJoinGameDialog();
+
+  joinGameButton.addEventListener("click", () => {
+    joinGameDialog.showModal();
+    joinGameDialog.classList.add("active");
+  });
+
+  const goBackButton = document.createElement("button");
+  goBackButton.textContent = "Go back!";
+  goBackButton.classList.add("goBackButton");
+
+  goBackButton.addEventListener("click", choosingModeButtons);
+
+  buttonContainer.appendChild(createGameButton);
+  buttonContainer.appendChild(joinGameButton);
+  buttonContainer.appendChild(goBackButton);
+}
 
 export default function startMenu() {
   const startMenuContainer = document.createElement("div");
@@ -25,15 +99,7 @@ export default function startMenu() {
   const buttonContainer = document.createElement("div");
   buttonContainer.classList.add("buttonContainer");
   startMenuContainer.appendChild(buttonContainer);
-
-  const startGameButtonContainer = document.createElement("div");
-  createInitializeGameButton(startGameButtonContainer);
-
-  const gameModeButtonContainer = document.createElement("div");
-  createGameModeChangeButton(gameModeButtonContainer);
-
-  const gameStyleButtonContainer = document.createElement("div");
-  createGameStyleChangeButton(gameStyleButtonContainer);
+  choosingModeButtons();
 
   const helpButtonContainer = document.createElement("div");
   const helpButton = document.createElement("button");
@@ -51,10 +117,7 @@ export default function startMenu() {
 
   message.appendChild(authorLink);
 
-  buttonContainer.appendChild(startGameButtonContainer);
-  buttonContainer.appendChild(gameModeButtonContainer);
-  buttonContainer.appendChild(gameStyleButtonContainer);
-  buttonContainer.appendChild(helpButtonContainer);
+  startMenuContainer.appendChild(helpButtonContainer);
   startMenuContainer.appendChild(message);
 
   const dialog = createDialog();

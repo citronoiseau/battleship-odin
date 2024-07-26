@@ -1,4 +1,6 @@
 import closeIcon from "../icons/close.svg";
+import { joinGame } from "../modules/controllerMultiplayer";
+import changeScreens from "./screenChanger";
 
 export default function createJoinGameDialog() {
   const menu = document.querySelector(".startMenuContainer");
@@ -60,6 +62,14 @@ export default function createJoinGameDialog() {
 
   dialogForm.appendChild(formElement);
   dialogForm.appendChild(confirmIdButton);
+
+  dialogForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const gameId = document.getElementById("gameId").value;
+    console.log("Game ID:", gameId);
+    joinGame(gameId);
+    changeScreens("selecting", false, gameId);
+  });
 
   dialog.appendChild(dialogForm);
 

@@ -2,6 +2,7 @@ import {
   createGameModeChangeButton,
   createInitializeGameButton,
   createGameStyleChangeButton,
+  createCreateGameButton,
 } from "./createButtons";
 
 import createDialog from "./helpMenu";
@@ -58,8 +59,7 @@ function multiplayer() {
   while (buttonContainer.firstChild) {
     buttonContainer.removeChild(buttonContainer.firstChild);
   }
-  const createGameButton = document.createElement("button");
-  createGameButton.textContent = "Create game";
+  createCreateGameButton(buttonContainer);
 
   const joinGameButton = document.createElement("button");
   joinGameButton.textContent = "Join game";
@@ -71,13 +71,14 @@ function multiplayer() {
     joinGameDialog.classList.add("active");
   });
 
+  createGameStyleChangeButton(buttonContainer, true);
+
   const goBackButton = document.createElement("button");
   goBackButton.textContent = "Go back!";
   goBackButton.classList.add("goBackButton");
 
   goBackButton.addEventListener("click", choosingModeButtons);
 
-  buttonContainer.appendChild(createGameButton);
   buttonContainer.appendChild(joinGameButton);
   buttonContainer.appendChild(goBackButton);
 }

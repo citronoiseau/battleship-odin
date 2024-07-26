@@ -4,7 +4,7 @@ import startMenu from "./startMenu";
 
 const content = document.querySelector("#content");
 
-export default function changeScreens(screen, twoPlayers = false) {
+export default function changeScreens(screen, twoPlayers = false, gameId) {
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
@@ -14,7 +14,7 @@ export default function changeScreens(screen, twoPlayers = false) {
     content.appendChild(menu);
   }
   if (screen === "selecting") {
-    const menu = playerMenu(twoPlayers);
+    const menu = playerMenu(twoPlayers, gameId);
     content.appendChild(menu);
   }
   if (screen === "starting") {

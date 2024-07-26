@@ -9,6 +9,16 @@ import {
   checkPlacedShips,
 } from "../modules/controller";
 
+import {
+  gameControllerMultiplayer,
+  initializeGameMultiplayer,
+  gameParamsMultiplayer,
+  handlePlayersMultiplayer,
+  randomizeShipsMultiplayer,
+  clearBoardMultiplayer,
+  removePlayerShipMultiplayer,
+} from "../modules/controllerMultiplayer";
+
 import changeScreens from "./screenChanger";
 
 function createGeneralButton(id, parent, text) {
@@ -64,8 +74,14 @@ export function createGameModeChangeButton(parent) {
   return gameModeChangeButton;
 }
 
-export function createGameStyleChangeButton(parent) {
-  let gameStyle = gameParams.getGameStyle();
+export function createGameStyleChangeButton(parent, multiplayer) {
+  let gameStyle;
+  if (multiplayer) {
+    gameStyle = gameParamsMultiplayer.getGameStyle();
+  } else {
+    gameStyle = gameParams.getGameStyle();
+  }
+
   let textMessage;
   if (gameStyle === "untilMiss") {
     textMessage = "Game style: Until first miss";
@@ -79,8 +95,14 @@ export function createGameStyleChangeButton(parent) {
   );
 
   gameStyleChangeButton.addEventListener("click", () => {
-    gameParams.changeGameStyle();
-    gameStyle = gameParams.getGameStyle();
+    if (multiplayer) {
+      gameParamsMultiplayer.changeGameStyle();
+      gameStyle = gameParamsMultiplayer.getGameStyle();
+    } else {
+      gameParams.changeGameStyle();
+      gameStyle = gameParams.getGameStyle();
+    }
+
     if (gameStyle === "untilMiss") {
       gameStyleChangeButton.textContent = "Game style: Until first miss";
     } else {
@@ -90,27 +112,56 @@ export function createGameStyleChangeButton(parent) {
   return gameStyleChangeButton;
 }
 
-export function createStartGameButton(parent) {
+export function createStartGameButton(parent, multiplayer) {
   const startGameButton = createGeneralButton(
     "startGameButton",
     parent,
     "Start your game!",
   );
-
-  startGameButton.addEventListener("click", () => {
-    const mode = gameParams.getGameMode();
-    const shipsArePlaced = checkPlacedShips();
-    if (shipsArePlaced) {
-      if (mode === "playerVsPlayer") {
-        changeScreens("playing", true);
+  if (multiplayer) {
+    startGameButton.addEventListener("click", () => {
+      const players = handlePlayersMultiplayer.getPlayers();
+      if (players.length === 1) {
+        alert("Player 2 hasn't joined yet!");
       } else {
-        changeScreens("playing");
+        // display a dialog with waiting for second player
+        // send board to server
+        // add cancel button
       }
+    });
+  } else {
+    startGameButton.addEventListener("click", () => {
+      const mode = gameParams.getGameMode();
+      const shipsArePlaced = checkPlacedShips();
+      if (shipsArePlaced) {
+        if (mode === "playerVsPlayer") {
+          changeScreens("playing", true);
+        } else {
+          changeScreens("playing");
+        }
 
-      gameController();
-    }
-  });
+        gameController();
+      }
+    });
+  }
+
   return startGameButton;
+}
+
+export function createCreateGameButton(parent) {
+  const createGameButton = createGeneralButton(
+    "createGameButton",
+    parent,
+    "Create your game!",
+  );
+
+  createGameButton.addEventListener("click", () => {
+    initializeGameMultiplayer().then((response) => {
+      changeScreens("selecting", false, response.id);
+      // alert(response.player.name);
+    });
+  });
+  return createGameButton;
 }
 
 export function createRestartGameButton(parent, twoPlayers) {
@@ -143,32 +194,57 @@ export function createReturnToStartMenuButton(parent, fromMenu) {
   return returnButton;
 }
 
-export function createRandomizeButton(parent, secondPlayer = false) {
+function getPlayers(secondPlayer, multiplayer) {
+  let first;
+  let second;
+
+  if (multiplayer) {
+    [first, second] = handlePlayersMultiplayer.getPlayers();
+  } else {
+    [first, second] = handlePlayers.getPlayers();
+  }
+
+  const player = secondPlayer ? second : first;
+  return player;
+}
+
+export function createRandomizeButton(
+  parent,
+  secondPlayer = false,
+  multiplayer,
+) {
   const randomizeButton = createGeneralButton(
     "randomizeButton",
     parent,
     "Randomize ships!",
   );
-  const [first, second] = handlePlayers.getPlayers();
-  const player = secondPlayer ? second : first;
 
   randomizeButton.addEventListener("click", () => {
-    randomizeShips(player.board, player.type);
+    const player = getPlayers(secondPlayer, multiplayer);
+    if (multiplayer) {
+      randomizeShipsMultiplayer(player.board, player.type);
+    } else {
+      randomizeShips(player.board, player.type);
+    }
   });
 
   return randomizeButton;
 }
 
-export function createClearButton(parent, secondPlayer = false) {
+export function createClearButton(parent, secondPlayer = false, multiplayer) {
   const clearButton = createGeneralButton(
     "clearButton",
     parent,
     "Clear board!",
   );
-  const [first, second] = handlePlayers.getPlayers();
-  const player = secondPlayer ? second : first;
 
   clearButton.addEventListener("click", () => {
+    const player = getPlayers(secondPlayer, multiplayer);
+    if (multiplayer) {
+      clearBoardMultiplayer(player.board, player.type);
+    } else {
+      clearBoard(player.board, player.type);
+    }
     clearBoard(player.board, player.type);
   });
   return clearButton;

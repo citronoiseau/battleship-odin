@@ -518,3 +518,47 @@ button:hover {
   width: 150px;
   margin-top: 20px;
 }
+
+.gameIdContainer {
+  font-family: "Inconsolata", monospace;
+  background-color: #636763;
+  font-size: min(5vw, 1.3rem);
+  color: #f6f5e3;
+  border-radius: 15px;
+  text-align: center;
+  padding: 15px;
+}
+.gameId {
+  transition: all 0.2s ease-in-out;
+  padding: 5px;
+  border-radius: 15px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.gameId:hover {
+  background-color: #474a47;
+}
+
+.gameId .tooltiptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #fefefe;
+  font-size: min(5vw, 1rem);
+  color: #636763;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -80px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.gameId:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}

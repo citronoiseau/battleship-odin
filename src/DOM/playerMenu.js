@@ -13,6 +13,13 @@ import {
   checkSecondPlayerShips,
 } from "../modules/controller";
 
+import {
+  placePlayerShipMultiplayer,
+  removePlayerShipMultiplayer,
+  getGameStatus,
+} from "../modules/controllerMultiplayer";
+
+let multiplayer;
 const content = document.querySelector("#content");
 function handleDragStart(event) {
   event.dataTransfer.setDragImage(event.target, 20, 20);
@@ -49,15 +56,19 @@ function handleDrop(event) {
   const parentContainer = gameboardContainer.parentElement;
 
   const selectionBoard = parentContainer.querySelector(".selectionBoard");
-
-  const placed = placePlayerShip(
-    shipId,
-    x,
-    y,
-    isHorizontal,
-    shipLength,
-    board.id,
-  );
+  let placed;
+  if (multiplayer) {
+    placed = placePlayerShipMultiplayer(
+      shipId,
+      x,
+      y,
+      isHorizontal,
+      shipLength,
+      board.id,
+    );
+  } else {
+    placed = placePlayerShip(shipId, x, y, isHorizontal, shipLength, board.id);
+  }
   if (placed) {
     const placedShip = selectionBoard.querySelector(`[data-id="${shipId}"]`);
     placedShip.classList.add("hidden");
@@ -70,8 +81,11 @@ function removeShip(cell) {
   const gameboardContainer = board.closest(".gameboardContainer");
   const parentContainer = gameboardContainer.parentElement;
   const selectionBoard = parentContainer.querySelector(".selectionBoard");
-
-  removePlayerShip(shipId, board.id);
+  if (multiplayer) {
+    removePlayerShipMultiplayer(shipId, board.id);
+  } else {
+    removePlayerShip(shipId, board.id);
+  }
 
   const placedShip = selectionBoard.querySelector(`[data-id="${shipId}"]`);
   placedShip.classList.remove("hidden");
@@ -174,7 +188,14 @@ function hideShips(container) {
   });
 }
 
-export default function playerMenu(twoPlayers) {
+export function updateGameStatus(status) {
+  const message = document.querySelector("#gameStatusMessage");
+
+  console.log(status);
+  message.textContent = `Your game status is ${status}`;
+}
+
+export default function playerMenu(twoPlayers, gameId) {
   const selectMenuContainer = document.createElement("div");
   selectMenuContainer.classList.add("selectMenuContainer");
   content.appendChild(selectMenuContainer);
@@ -188,10 +209,55 @@ export default function playerMenu(twoPlayers) {
     createReturnToStartMenuButton(returnToStartMenuContainer, true);
 
     const startGameButtonContainer = document.createElement("div");
-    createStartGameButton(startGameButtonContainer);
+    createStartGameButton(startGameButtonContainer, gameId);
 
     screenControlsContainer.appendChild(returnToStartMenuContainer);
     screenControlsContainer.appendChild(startGameButtonContainer);
+  }
+
+  if (gameId) {
+    multiplayer = true;
+
+    const gameIdContainer = document.createElement("div");
+    gameIdContainer.classList.add("gameIdContainer");
+    selectMenuContainer.appendChild(gameIdContainer);
+
+    const gameIdMessage = document.createElement("span");
+    gameIdMessage.textContent = "Your game id: ";
+
+    const id = document.createElement("span");
+    id.classList.add("gameId");
+    id.textContent = gameId;
+
+    id.addEventListener("click", () => {
+      const textToCopy = gameId;
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          alert(`Game ID copied to clipboard: ${gameId}`);
+        })
+        .catch((error) => {
+          console.error("Failed to copy text: ", error);
+        });
+    });
+
+    const tooltipText = document.createElement("span");
+    tooltipText.classList.add("tooltiptext");
+    tooltipText.textContent = "Left-click to copy";
+    id.appendChild(tooltipText);
+
+    gameIdContainer.appendChild(gameIdMessage);
+    gameIdContainer.appendChild(id);
+
+    const gameStatusMessage = document.createElement("div");
+    gameStatusMessage.id = "gameStatusMessage";
+    selectMenuContainer.appendChild(gameStatusMessage);
+    const gameStatus = getGameStatus(gameId);
+
+    gameStatus.then((response) => {
+      const status = response;
+      gameStatusMessage.textContent = `Your game status is ${status}`;
+    });
   }
 
   const choosingContainer = document.createElement("div");
@@ -246,11 +312,31 @@ export default function playerMenu(twoPlayers) {
   playerOneContainer.appendChild(boardControlsContainer);
 
   const randomizeButtonContainer = document.createElement("div");
-  const randomizeButton = createRandomizeButton(randomizeButtonContainer);
+  let randomizeButton;
+  if (gameId) {
+    randomizeButton = createRandomizeButton(
+      randomizeButtonContainer,
+      false,
+      true,
+    );
+  } else {
+    randomizeButton = createRandomizeButton(
+      randomizeButtonContainer,
+      false,
+      false,
+    );
+  }
+
   randomizeButton.addEventListener("click", () => hideShips(selectionBoard));
 
   const clearButtonContainer = document.createElement("div");
-  const clearButton = createClearButton(clearButtonContainer);
+  let clearButton;
+  if (gameId) {
+    clearButton = createClearButton(clearButtonContainer, false, true);
+  } else {
+    clearButton = createClearButton(clearButtonContainer, false, false);
+  }
+
   clearButton.addEventListener("click", () => {
     restartShips(ships);
   });
@@ -380,7 +466,7 @@ export default function playerMenu(twoPlayers) {
     });
     cell.addEventListener("dragover", handleDragOver);
     cell.addEventListener("dragleave", handleDragLeave);
-    cell.addEventListener("drop", handleDrop);
+    cell.addEventListener("drop", handleDrop, gameId);
 
     cell.addEventListener("click", () => {
       if (cell.dataset.id) {

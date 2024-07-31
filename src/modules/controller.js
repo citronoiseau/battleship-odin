@@ -576,6 +576,5 @@ export const gameController = function () {
     hideCells(player2.type);
     changeMessage(`${handlePlayers.getActivePlayer().name} turn!`);
   }
-
   return {};
 };

@@ -1,11 +1,18 @@
 /* eslint-disable no-plusplus */
 import Player from "../classes/player";
-import { renderBoard } from "../DOM/boardDOM";
+import { renderBoard, renderMultiplayerBoard } from "../DOM/boardDOM";
 import { changeMessage } from "../DOM/gameMenu";
-import { updateGameStatus } from "../DOM/playerMenu";
+import {
+  updateGameStatus,
+  updatePlayerMessage,
+  showToast,
+} from "../DOM/playerMenu";
+import changeScreens from "../DOM/screenChanger";
 
 export const gameParamsMultiplayer = (function () {
   let gameStyle = "oneByOne";
+  let gameId;
+  let isWin = false;
 
   const changeGameStyle = function () {
     if (gameStyle === "oneByOne") {
@@ -19,14 +26,36 @@ export const gameParamsMultiplayer = (function () {
     return gameStyle;
   };
 
-  return { changeGameStyle, getGameStyle };
+  const updateGameId = function (newGameId) {
+    gameId = newGameId;
+  };
+
+  const setIsWin = function () {
+    isWin = !isWin;
+  };
+
+  const checkIsWin = function () {
+    return isWin;
+  };
+
+  const getGameId = function () {
+    return gameId;
+  };
+
+  return {
+    changeGameStyle,
+    getGameStyle,
+    updateGameId,
+    getGameId,
+    setIsWin,
+    checkIsWin,
+  };
 })();
 
 export const handlePlayersMultiplayer = (function () {
   const players = [];
 
   let activePlayer = null;
-  let waitingPlayer = null;
 
   const initializePlayer = function (id, name) {
     const player = new Player("human", name, id);
@@ -37,25 +66,33 @@ export const handlePlayersMultiplayer = (function () {
     return players;
   };
 
+  const setActivePlayer = function () {
+    [activePlayer] = players;
+  };
+
+  const resetActivePlayer = () => {
+    activePlayer = null;
+  };
+
   const getActivePlayer = () => activePlayer;
 
-  const getWaitingPlayer = () => waitingPlayer;
-
-  const switchTurn = function () {
-    [activePlayer, waitingPlayer] = [waitingPlayer, activePlayer];
+  const resetPlayers = function () {
+    players.shift();
   };
 
   return {
     getPlayers,
+    setActivePlayer,
     getActivePlayer,
-    switchTurn,
-    getWaitingPlayer,
+    resetActivePlayer,
     initializePlayer,
+    resetPlayers,
   };
 })();
 
 const gameServerHost = "votrubac.pythonanywhere.com";
-let currentGameStatus = "LOBBY";
+let currentGameStatus;
+let statusInterval;
 
 async function apiCall(url) {
   const response = await fetch(url);
@@ -70,41 +107,57 @@ async function createGame(gameStyle) {
   return apiCall(`https://${gameServerHost}/new_game?turn_rule=${turnRule}`);
 }
 
-function handleGameStatusChange(newStatus) {
-  if (newStatus === "SETUP") {
-    const [first] = handlePlayersMultiplayer.getPlayers();
-    if (first.name === "Player 1") {
-      handlePlayersMultiplayer.initializePlayer(1, "Player 2");
-    } else {
-      handlePlayersMultiplayer.initializePlayer(0, "Player 1");
+async function handleGameStatusChange(newStatus) {
+  const [player] = handlePlayersMultiplayer.getPlayers();
+  if (newStatus.state === "LOBBY") {
+    updateGameStatus(newStatus.state);
+    updatePlayerMessage(player.name);
+  }
+  if (newStatus.state === "SETUP") {
+    updateGameStatus(newStatus.state);
+    if (player.name === "Player 1") {
+      showToast(`Player 2 has joined`);
     }
+
+    updatePlayerMessage(player.name);
+  }
+  if (newStatus.state === "TURN") {
+    changeScreens("playing", false, true);
+    renderBoard(player.board, player.type);
+    passTurns();
+    clearInterval(statusInterval);
   }
 
-  console.log("Game status updated to:", newStatus);
-  updateGameStatus(newStatus);
-  const players = handlePlayersMultiplayer.getPlayers();
-  console.log(players);
+  if (newStatus.state === "FINISHED") {
+    gameParamsMultiplayer.setIsWin();
+    const { winner } = newStatus;
+    if (winner === player.name) {
+      changeMessage(`You won!`);
+    } else {
+      changeMessage(`${winner} won!`);
+    }
+  }
+  console.log("Game status updated to:", newStatus.state);
 }
 
 export async function getGameStatus(gameId) {
-  const response = await apiCall(`https://${gameServerHost}/status/${gameId}`);
-  const status = response.state;
-  return status;
+  return apiCall(`https://${gameServerHost}/status/${gameId}`);
 }
 
 async function checkGameStatus(gameId) {
   try {
-    const gameStatus = await getGameStatus(gameId);
+    const fullGameStatus = await getGameStatus(gameId);
 
-    if (gameStatus !== currentGameStatus) {
-      currentGameStatus = gameStatus;
-      handleGameStatusChange(gameStatus);
+    if (fullGameStatus.state !== currentGameStatus) {
+      currentGameStatus = fullGameStatus.state;
+      handleGameStatusChange(fullGameStatus);
     }
 
-    setTimeout(() => checkGameStatus(gameId), 5000);
+    statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
+    return fullGameStatus;
   } catch (error) {
     console.error("Failed to fetch game status:", error);
-    setTimeout(() => checkGameStatus(gameId), 5000);
+    statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
   }
 }
 
@@ -116,8 +169,60 @@ export async function joinGame(gameId) {
       response.player.name,
     );
     checkGameStatus(gameId);
+    gameParamsMultiplayer.updateGameId(response.id);
   });
   return data;
+}
+
+function placeEnemyHit(status, player) {
+  const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
+  const enemyTurns = status.turns[enemyName];
+  const { length } = enemyTurns;
+  if (length !== 0) {
+    for (let i = 0; i < length; i++) {
+      const { x, y } = enemyTurns[i];
+      player.board.receiveAttack(x, y);
+    }
+    renderBoard(player.board, player.type);
+  }
+}
+
+async function passTurns() {
+  const gameId = gameParamsMultiplayer.getGameId();
+  const [player] = handlePlayersMultiplayer.getPlayers();
+  const status = await checkGameStatus(gameId);
+  if (player) {
+    placeEnemyHit(status, player);
+  }
+
+  const activePlayer = status.players_order[status.current_player];
+
+  if (!status.winner) {
+    if (activePlayer === player.name) {
+      changeMessage(`Your turn!`);
+      handlePlayersMultiplayer.setActivePlayer();
+    } else {
+      handlePlayersMultiplayer.resetActivePlayer();
+      changeMessage(`${activePlayer} turn!`);
+    }
+
+    setTimeout(() => passTurns(), 1000);
+  }
+}
+
+export async function setBoard(gameId, playerId, board) {
+  const boardArray = [[], [], [], [], [], [], [], [], [], []];
+  for (let i = 0; i < 10; ++i) {
+    for (let j = 0; j < 10; ++j) {
+      if (board[i][j].ship !== null) {
+        const { ship } = board[i][j];
+        boardArray[ship.id - 1].push([i, j]);
+      }
+    }
+  }
+  const JSONBoard = JSON.stringify(boardArray);
+  const url = `https://${gameServerHost}/set_board/${gameId}?player_id=${playerId}&ships=${JSONBoard}`;
+  return apiCall(url);
 }
 
 export async function initializeGameMultiplayer() {
@@ -129,44 +234,56 @@ export async function initializeGameMultiplayer() {
         response.player.name,
       );
       checkGameStatus(response.id);
+      gameParamsMultiplayer.updateGameId(response.id);
     });
-    console.log(data);
-
     return data;
   } catch (error) {
     console.error("There was an error with the fetch operation:", error);
   }
 }
 
-export const gameControllerMultiplayer = function () {
-  const [player1, player2] = handlePlayersMultiplayer.getPlayers();
-  renderBoard(player1.board, player1.type);
-  changeMessage(`${handlePlayersMultiplayer.getActivePlayer().name} turn!`);
+function checkIfValidHit() {
+  if (handlePlayersMultiplayer.getActivePlayer() === null) {
+    return false;
+  }
+  if (gameParamsMultiplayer.checkIsWin()) {
+    return false;
+  }
+  return true;
+}
 
-  return {};
-};
+async function sendHit(gameId, playerId, x, y) {
+  return apiCall(
+    `https://${gameServerHost}/turn/${gameId}?player_id=${playerId}&x=${x}&y=${y}`,
+  );
+}
+
+export function registerPlayerHitMultiplayer(cell) {
+  if (checkIfValidHit()) {
+    const x = cell.getAttribute("data-row");
+    const y = cell.getAttribute("data-column");
+
+    const [player] = handlePlayersMultiplayer.getPlayers();
+    const gameId = gameParamsMultiplayer.getGameId();
+    const result = sendHit(gameId, player.id, x, y);
+    result.then((response) => {
+      console.log(response);
+      renderMultiplayerBoard(x, y, response.result, response.cells);
+    });
+  }
+}
 
 // placement
 
-export function placePlayerShipMultiplayer(
-  shipId,
-  x,
-  y,
-  isHorizontal,
-  length,
-  type,
-) {
-  const [player1, player2] = handlePlayersMultiplayer.getPlayers();
-  const neededPlayer = [player1, player2].find(
-    (player) => player.type === type,
-  );
+export function placePlayerShipMultiplayer(shipId, x, y, isHorizontal, length) {
+  const [player1] = handlePlayersMultiplayer.getPlayers();
 
-  const playerBoard = neededPlayer.board;
+  const playerBoard = player1.board;
   const id = Number(shipId);
   playerBoard.createShip(id, length);
   const placed = playerBoard.placeShip(id, x, y, isHorizontal);
   if (placed) {
-    renderBoard(playerBoard, neededPlayer.type);
+    renderBoard(playerBoard, player1.type);
     return true;
   }
   return false;
@@ -174,13 +291,9 @@ export function placePlayerShipMultiplayer(
 
 export function removePlayerShipMultiplayer(shipId, type) {
   const id = Number(shipId);
-  const [player1, player2] = handlePlayersMultiplayer.getPlayers();
-  const neededPlayer = [player1, player2].find(
-    (player) => player.type === type,
-  );
-  const playerBoard = neededPlayer.board;
-  playerBoard.removeShip(id);
-  renderBoard(playerBoard, neededPlayer.type);
+  const [player1] = handlePlayersMultiplayer.getPlayers();
+  player1.board.removeShip(id);
+  renderBoard(player1.board, player1.type);
 }
 
 export function randomizeShipsMultiplayer(board, typeOfPlayer) {

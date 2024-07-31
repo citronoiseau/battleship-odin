@@ -151,8 +151,12 @@ export default class GameBoard {
   receiveAttack(x, y) {
     const ship = this.getShip(x, y);
     if (ship) {
+      if (this.board[x][y].hit) {
+        return;
+      }
       ship.hit();
       this.board[x][y].hit = true;
+
       if (ship.isSunk()) {
         const shipLength = ship.getLength();
         const shipDirection = ship.getIsHorizontal();

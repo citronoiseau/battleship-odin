@@ -66,7 +66,6 @@ export default function createJoinGameDialog() {
   dialogForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const gameId = document.getElementById("gameId").value;
-    console.log("Game ID:", gameId);
     joinGame(gameId);
     changeScreens("selecting", false, gameId);
   });

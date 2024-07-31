@@ -5,14 +5,18 @@ import {
   createReturnToStartMenuButton,
 } from "./createButtons";
 
+import { registerPlayerHitMultiplayer } from "../modules/controllerMultiplayer";
+
 const content = document.querySelector("#content");
 
 export function changeMessage(text) {
   const message = document.querySelector(".turnMessage");
-  message.textContent = text;
+  if (message) {
+    message.textContent = text;
+  }
 }
 
-export function gameMenu(twoPlayers) {
+export function gameMenu(twoPlayers, multiplayer) {
   const gameContainer = document.createElement("div");
   gameContainer.classList.add("gameContainer");
   content.appendChild(gameContainer);
@@ -67,7 +71,22 @@ export function gameMenu(twoPlayers) {
         registerPlayerHit(cell);
       });
     });
-  } else {
+  }
+  if (multiplayer) {
+    const playerBoard2 = createGameBoard("human2", boardsContainer);
+    const cells = document.querySelectorAll(".cell");
+    cells.forEach((cell) => {
+      cell.addEventListener("click", () => {
+        if (
+          !cell.classList.contains("hit") &&
+          !cell.classList.contains("human")
+        ) {
+          registerPlayerHitMultiplayer(cell);
+        }
+      });
+    });
+  }
+  if (!twoPlayers && !multiplayer) {
     const computerBoard = createGameBoard("computer", boardsContainer);
     const cells = document.querySelectorAll(".cell");
     cells.forEach((cell) => {
@@ -81,14 +100,15 @@ export function gameMenu(twoPlayers) {
       });
     });
   }
-
-  const restartGameButtonContainer = document.createElement("div");
-  createRestartGameButton(restartGameButtonContainer, twoPlayers);
+  if (!multiplayer) {
+    const restartGameButtonContainer = document.createElement("div");
+    createRestartGameButton(restartGameButtonContainer, twoPlayers);
+    buttonsContainer.appendChild(restartGameButtonContainer);
+  }
 
   const returnToStartMenuContainer = document.createElement("div");
-  createReturnToStartMenuButton(returnToStartMenuContainer);
+  createReturnToStartMenuButton(returnToStartMenuContainer, false, multiplayer);
 
-  buttonsContainer.appendChild(restartGameButtonContainer);
   buttonsContainer.appendChild(returnToStartMenuContainer);
   return gameContainer;
 }

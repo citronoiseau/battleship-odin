@@ -10,7 +10,7 @@ export default function changeScreens(screen, twoPlayers = false, gameId) {
   }
 
   if (screen === "playing") {
-    const menu = gameMenu(twoPlayers);
+    const menu = gameMenu(twoPlayers, gameId);
     content.appendChild(menu);
   }
   if (screen === "selecting") {

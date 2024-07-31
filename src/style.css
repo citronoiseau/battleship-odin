@@ -39,7 +39,7 @@ button:hover {
 
 .title {
   font-family: "Indie Flower", cursive;
-  font-size: 10vw;
+  font-size: 9vw;
   color: #394f41;
 }
 
@@ -93,7 +93,6 @@ button:hover {
 }
 
 .dialog {
-  position:;
   top: 50%;
   height: 0;
   overflow: hidden;
@@ -356,22 +355,23 @@ button:hover {
   border: 1px solid #c2c2c2;
 }
 .cell:hover,
-.cell.human.ship.hidden:hover,
-.cell.human2.ship.hidden:hover {
+.cell.ship.hidden:hover,
+.cell.ship.hidden:hover,
+.cell.computer.ship:hover {
   background-color: #00000066;
   transition: all 0.1s ease-out;
 }
-.cell.human.ship.hidden,
-.cell.human2.ship.hidden {
+.cell.ship.hidden,
+.cell.ship.hidden,
+.cell.computer.ship {
   background-color: #00000000;
   border: 2px solid #62afb4;
 }
-.cell.human.ship,
-.cell.human2.ship {
+.cell.ship {
   background-color: #5f5f5f;
 }
-.cell.human.ship.hit,
-.cell.human2.ship.hit {
+.cell.ship.hit,
+.cell.ship.hit {
   background-color: #f95e5ed5;
   border: 1px solid #f95e5e00;
   background-image: url("icons/hit.svg");
@@ -561,4 +561,58 @@ button:hover {
 .gameId:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+.toast {
+  font-family: "Inconsolata", monospace;
+  visibility: hidden;
+  max-width: 50%;
+  margin: 0 auto;
+  text-align: center;
+  border-radius: 5px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+  transform: translateX(-50%);
+  border-radius: 15px;
+  box-shadow:
+    rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  background-color: #394f41;
+  color: #f6f5e3;
+}
+
+.toast.show {
+  visibility: visible;
+  -webkit-animation:
+    fadein 0.5s,
+    fadeout 0.5s 2.5s;
+  animation:
+    fadein 0.5s,
+    fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+  to {
+    bottom: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 30px;
+    opacity: 1;
+  }
+  to {
+    bottom: 0;
+    opacity: 0;
+  }
 }

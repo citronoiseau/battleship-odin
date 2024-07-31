@@ -10,16 +10,19 @@ import {
 } from "../modules/controller";
 
 import {
-  gameControllerMultiplayer,
   initializeGameMultiplayer,
   gameParamsMultiplayer,
   handlePlayersMultiplayer,
   randomizeShipsMultiplayer,
   clearBoardMultiplayer,
   removePlayerShipMultiplayer,
+  getGameStatus,
+  setBoard,
 } from "../modules/controllerMultiplayer";
 
 import changeScreens from "./screenChanger";
+
+import createWaitDialog from "./waitingDialog";
 
 function createGeneralButton(id, parent, text) {
   const button = document.createElement("button");
@@ -27,6 +30,13 @@ function createGeneralButton(id, parent, text) {
   parent.appendChild(button);
   button.textContent = text;
   return button;
+}
+
+function clearAllIntervals() {
+  const intervalId = setInterval(() => {}, 1000);
+  for (let i = 1; i <= intervalId; ++i) {
+    clearInterval(i);
+  }
 }
 
 export function createInitializeGameButton(parent) {
@@ -112,22 +122,32 @@ export function createGameStyleChangeButton(parent, multiplayer) {
   return gameStyleChangeButton;
 }
 
-export function createStartGameButton(parent, multiplayer) {
+export function createStartGameButton(parent, gameId) {
   const startGameButton = createGeneralButton(
     "startGameButton",
     parent,
     "Start your game!",
   );
-  if (multiplayer) {
+  if (gameId) {
     startGameButton.addEventListener("click", () => {
-      const players = handlePlayersMultiplayer.getPlayers();
-      if (players.length === 1) {
-        alert("Player 2 hasn't joined yet!");
-      } else {
-        // display a dialog with waiting for second player
-        // send board to server
-        // add cancel button
+      const [firstPlayer] = handlePlayersMultiplayer.getPlayers();
+      // TODO(citronoiseau): consolidate this function with single player mode.
+      if (firstPlayer.board.ships.length !== 10) {
+        alert("Place your ships first!");
+        return;
       }
+
+      const gameStatus = getGameStatus(gameId);
+      const gameBoard = firstPlayer.board.board;
+      setBoard(gameId, firstPlayer.id, gameBoard);
+
+      let status;
+      gameStatus.then((response) => {
+        status = response;
+        const dialog = createWaitDialog(gameId, status);
+        dialog.showModal();
+        dialog.classList.add("active");
+      });
     });
   } else {
     startGameButton.addEventListener("click", () => {
@@ -178,7 +198,7 @@ export function createRestartGameButton(parent, twoPlayers) {
   return restartGameButton;
 }
 
-export function createReturnToStartMenuButton(parent, fromMenu) {
+export function createReturnToStartMenuButton(parent, fromMenu, multiplayer) {
   const returnButton = createGeneralButton(
     "returnButton",
     parent,
@@ -186,7 +206,12 @@ export function createReturnToStartMenuButton(parent, fromMenu) {
   );
 
   returnButton.addEventListener("click", () => {
-    if (!fromMenu) {
+    if (multiplayer) {
+      clearAllIntervals();
+      gameParamsMultiplayer.setIsWin();
+      handlePlayersMultiplayer.resetPlayers();
+    }
+    if (!fromMenu && !multiplayer) {
       restartGame();
     }
     changeScreens("starting");

@@ -33,7 +33,7 @@ function createGeneralButton(id, parent, text) {
 }
 
 function clearAllIntervals() {
-  const intervalId = setInterval(() => {}, 1000);
+  const intervalId = setInterval(() => {}, 500);
   for (let i = 1; i <= intervalId; ++i) {
     clearInterval(i);
   }

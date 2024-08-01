@@ -93,6 +93,7 @@ export const handlePlayersMultiplayer = (function () {
 const gameServerHost = "votrubac.pythonanywhere.com";
 let currentGameStatus;
 let statusInterval;
+let turnInterval;
 
 async function apiCall(url) {
   const response = await fetch(url);
@@ -129,6 +130,7 @@ async function handleGameStatusChange(newStatus) {
   }
 
   if (newStatus.state === "FINISHED") {
+    clearInterval(turnInterval);
     gameParamsMultiplayer.setIsWin();
     const { winner } = newStatus;
     if (winner === player.name) {
@@ -206,7 +208,7 @@ async function passTurns() {
       changeMessage(`${activePlayer} turn!`);
     }
 
-    setTimeout(() => passTurns(), 1000);
+    turnInterval = setTimeout(() => passTurns(), 1000);
   }
 }
 

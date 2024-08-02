@@ -18,11 +18,14 @@ import {
   removePlayerShipMultiplayer,
   getGameStatus,
   setBoard,
+  setPlayerReady,
 } from "../modules/controllerMultiplayer";
 
 import changeScreens from "./screenChanger";
 
 import createWaitDialog from "./waitingDialog";
+
+import { showToast } from "./playerMenu";
 
 function createGeneralButton(id, parent, text) {
   const button = document.createElement("button");
@@ -30,13 +33,6 @@ function createGeneralButton(id, parent, text) {
   parent.appendChild(button);
   button.textContent = text;
   return button;
-}
-
-function clearAllIntervals() {
-  const intervalId = setInterval(() => {}, 500);
-  for (let i = 1; i <= intervalId; ++i) {
-    clearInterval(i);
-  }
 }
 
 export function createInitializeGameButton(parent) {
@@ -131,15 +127,19 @@ export function createStartGameButton(parent, gameId) {
   if (gameId) {
     startGameButton.addEventListener("click", () => {
       const [firstPlayer] = handlePlayersMultiplayer.getPlayers();
-      // TODO(citronoiseau): consolidate this function with single player mode.
       if (firstPlayer.board.ships.length !== 10) {
-        alert("Place your ships first!");
+        showToast("Place your ships first!", true);
         return;
       }
 
       const gameStatus = getGameStatus(gameId);
       const gameBoard = firstPlayer.board.board;
       setBoard(gameId, firstPlayer.id, gameBoard);
+      setTimeout(() => {
+        setPlayerReady(true).then((response) => {
+          console.log(response);
+        });
+      }, "800");
 
       let status;
       gameStatus.then((response) => {
@@ -178,7 +178,6 @@ export function createCreateGameButton(parent) {
   createGameButton.addEventListener("click", () => {
     initializeGameMultiplayer().then((response) => {
       changeScreens("selecting", false, response.id);
-      // alert(response.player.name);
     });
   });
   return createGameButton;
@@ -207,7 +206,7 @@ export function createReturnToStartMenuButton(parent, fromMenu, multiplayer) {
 
   returnButton.addEventListener("click", () => {
     if (multiplayer) {
-      clearAllIntervals();
+      gameParamsMultiplayer.clearIntervals();
       gameParamsMultiplayer.setIsWin();
       handlePlayersMultiplayer.resetPlayers();
     }
@@ -273,4 +272,28 @@ export function createClearButton(parent, secondPlayer = false, multiplayer) {
     clearBoard(player.board, player.type);
   });
   return clearButton;
+}
+
+export function cancelGameButton(parent, dialog) {
+  const cancelButton = createGeneralButton(
+    "cancelGameButton",
+    parent,
+    "Not ready yet",
+  );
+
+  cancelButton.addEventListener("click", () => {
+    setPlayerReady(false).then((response) => {
+      if (!response.ready) {
+        dialog.classList.remove("active");
+        setTimeout(() => {
+          dialog.close();
+        }, 300);
+        console.log(response);
+      } else {
+        showToast("Game is starting already!", true);
+      }
+    });
+  });
+
+  return cancelGameButton;
 }

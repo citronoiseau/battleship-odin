@@ -9,8 +9,15 @@ import {
 } from "../DOM/playerMenu";
 import changeScreens from "../DOM/screenChanger";
 
+const gameServerHost = "votrubac.pythonanywhere.com";
+
+let currentGameStatus;
+let statusInterval;
+let turnInterval;
+let readyplayers = 0;
+
 export const gameParamsMultiplayer = (function () {
-  let gameStyle = "oneByOne";
+  let gameStyle = "untilMiss";
   let gameId;
   let isWin = false;
 
@@ -42,6 +49,11 @@ export const gameParamsMultiplayer = (function () {
     return gameId;
   };
 
+  const clearIntervals = function () {
+    clearInterval(statusInterval);
+    clearInterval(turnInterval);
+  };
+
   return {
     changeGameStyle,
     getGameStyle,
@@ -49,6 +61,7 @@ export const gameParamsMultiplayer = (function () {
     getGameId,
     setIsWin,
     checkIsWin,
+    clearIntervals,
   };
 })();
 
@@ -90,11 +103,6 @@ export const handlePlayersMultiplayer = (function () {
   };
 })();
 
-const gameServerHost = "votrubac.pythonanywhere.com";
-let currentGameStatus;
-let statusInterval;
-let turnInterval;
-
 async function apiCall(url) {
   const response = await fetch(url);
   if (!response.ok) {
@@ -108,6 +116,19 @@ async function createGame(gameStyle) {
   return apiCall(`https://${gameServerHost}/new_game?turn_rule=${turnRule}`);
 }
 
+function updatePlayerReady(players) {
+  const [player] = handlePlayersMultiplayer.getPlayers();
+  const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
+  if (players.includes(enemyName)) {
+    showToast(`${enemyName} is ready`);
+  } else if (players.length === 1) {
+    showToast(`${enemyName} is not ready`);
+  } else if (players.length === 0) {
+    showToast(`None of the players is ready`);
+  }
+  readyplayers = players.length;
+}
+
 async function handleGameStatusChange(newStatus) {
   const [player] = handlePlayersMultiplayer.getPlayers();
   if (newStatus.state === "LOBBY") {
@@ -119,7 +140,6 @@ async function handleGameStatusChange(newStatus) {
     if (player.name === "Player 1") {
       showToast(`Player 2 has joined`);
     }
-
     updatePlayerMessage(player.name);
   }
   if (newStatus.state === "TURN") {
@@ -130,8 +150,10 @@ async function handleGameStatusChange(newStatus) {
   }
 
   if (newStatus.state === "FINISHED") {
+    placeEnemyHit(newStatus, player);
     clearInterval(turnInterval);
     gameParamsMultiplayer.setIsWin();
+    readyplayers = 0;
     const { winner } = newStatus;
     if (winner === player.name) {
       changeMessage(`You won!`);
@@ -154,8 +176,13 @@ async function checkGameStatus(gameId) {
       currentGameStatus = fullGameStatus.state;
       handleGameStatusChange(fullGameStatus);
     }
+    if (readyplayers !== fullGameStatus.ready_players.length) {
+      const players = fullGameStatus.ready_players;
+      updatePlayerReady(players);
+    }
 
     statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
+    console.log(fullGameStatus);
     return fullGameStatus;
   } catch (error) {
     console.error("Failed to fetch game status:", error);
@@ -212,7 +239,17 @@ async function passTurns() {
   }
 }
 
-export async function setBoard(gameId, playerId, board) {
+export async function setPlayerReady(isReady) {
+  const gameId = gameParamsMultiplayer.getGameId();
+  const [player] = handlePlayersMultiplayer.getPlayers();
+  const playerId = player.id;
+  const playerStatus = isReady ? "True" : "False";
+  return apiCall(
+    `https://${gameServerHost}/player_ready/${gameId}?player_id=${playerId}&ready=${playerStatus}`,
+  );
+}
+
+function convertBoard(board) {
   const boardArray = [[], [], [], [], [], [], [], [], [], []];
   for (let i = 0; i < 10; ++i) {
     for (let j = 0; j < 10; ++j) {
@@ -222,12 +259,18 @@ export async function setBoard(gameId, playerId, board) {
       }
     }
   }
+  return boardArray;
+}
+
+export async function setBoard(gameId, playerId, board) {
+  const boardArray = convertBoard(board);
   const JSONBoard = JSON.stringify(boardArray);
   const url = `https://${gameServerHost}/set_board/${gameId}?player_id=${playerId}&ships=${JSONBoard}`;
-  return apiCall(url);
+  apiCall(url);
 }
 
 export async function initializeGameMultiplayer() {
+  gameParamsMultiplayer.clearIntervals();
   try {
     const data = createGame(gameParamsMultiplayer.getGameStyle());
     data.then((response) => {

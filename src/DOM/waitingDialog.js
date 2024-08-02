@@ -1,3 +1,5 @@
+import { cancelGameButton } from "./createButtons";
+
 export default function createWaitDialog() {
   const menu = document.querySelector(".selectMenuContainer");
 
@@ -10,6 +12,10 @@ export default function createWaitDialog() {
   dialogTitle.textContent = "Waiting for other player...";
   dialogTitle.classList.add("dialogTitle");
   dialog.appendChild(dialogTitle);
+
+  const buttonContainer = document.createElement("div");
+  dialog.appendChild(buttonContainer);
+  const button = cancelGameButton(buttonContainer, dialog);
 
   return dialog;
 }

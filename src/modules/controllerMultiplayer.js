@@ -5,6 +5,7 @@ import { changeMessage } from "../DOM/gameMenu";
 import {
   updateGameStatus,
   updatePlayerMessage,
+  updateGameRulesMessage,
   showToast,
 } from "../DOM/playerMenu";
 import changeScreens from "../DOM/screenChanger";
@@ -54,6 +55,10 @@ export const gameParamsMultiplayer = (function () {
     clearInterval(turnInterval);
   };
 
+  const resetGameStatus = function () {
+    currentGameStatus = null;
+  };
+
   return {
     changeGameStyle,
     getGameStyle,
@@ -62,6 +67,7 @@ export const gameParamsMultiplayer = (function () {
     setIsWin,
     checkIsWin,
     clearIntervals,
+    resetGameStatus,
   };
 })();
 
@@ -118,15 +124,17 @@ async function createGame(gameStyle) {
 
 function updatePlayerReady(players) {
   const [player] = handlePlayersMultiplayer.getPlayers();
-  const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
-  if (players.includes(enemyName)) {
-    showToast(`${enemyName} is ready`);
-  } else if (players.length === 1) {
-    showToast(`${enemyName} is not ready`);
-  } else if (players.length === 0) {
-    showToast(`None of the players is ready`);
+  if (player) {
+    const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
+    if (players.includes(enemyName)) {
+      showToast(`${enemyName} is ready`);
+    } else if (players.length === 1) {
+      showToast(`${enemyName} is not ready`);
+    } else if (players.length === 0) {
+      showToast(`None of the players is ready`);
+    }
+    readyplayers = players.length;
   }
-  readyplayers = players.length;
 }
 
 async function handleGameStatusChange(newStatus) {
@@ -134,6 +142,7 @@ async function handleGameStatusChange(newStatus) {
   if (newStatus.state === "LOBBY") {
     updateGameStatus(newStatus.state);
     updatePlayerMessage(player.name);
+    updateGameRulesMessage(gameParamsMultiplayer.getGameStyle());
   }
   if (newStatus.state === "SETUP") {
     updateGameStatus(newStatus.state);
@@ -151,10 +160,8 @@ async function handleGameStatusChange(newStatus) {
 
   if (newStatus.state === "FINISHED") {
     placeEnemyHit(newStatus, player);
-    clearInterval(turnInterval);
-    gameParamsMultiplayer.setIsWin();
-    readyplayers = 0;
     const { winner } = newStatus;
+    resetGame();
     if (winner === player.name) {
       changeMessage(`You won!`);
     } else {
@@ -201,6 +208,15 @@ export async function joinGame(gameId) {
     gameParamsMultiplayer.updateGameId(response.id);
   });
   return data;
+}
+
+export function resetGame() {
+  gameParamsMultiplayer.clearIntervals();
+  gameParamsMultiplayer.setIsWin();
+  handlePlayersMultiplayer.resetPlayers();
+  gameParamsMultiplayer.resetGameStatus();
+  clearInterval(turnInterval);
+  readyplayers = 0;
 }
 
 function placeEnemyHit(status, player) {

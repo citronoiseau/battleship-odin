@@ -15,10 +15,10 @@ import {
   handlePlayersMultiplayer,
   randomizeShipsMultiplayer,
   clearBoardMultiplayer,
-  removePlayerShipMultiplayer,
   getGameStatus,
   setBoard,
   setPlayerReady,
+  resetGame,
 } from "../modules/controllerMultiplayer";
 
 import changeScreens from "./screenChanger";
@@ -206,9 +206,7 @@ export function createReturnToStartMenuButton(parent, fromMenu, multiplayer) {
 
   returnButton.addEventListener("click", () => {
     if (multiplayer) {
-      gameParamsMultiplayer.clearIntervals();
-      gameParamsMultiplayer.setIsWin();
-      handlePlayersMultiplayer.resetPlayers();
+      resetGame();
     }
     if (!fromMenu && !multiplayer) {
       restartGame();

@@ -202,6 +202,18 @@ export function updatePlayerMessage(name) {
   }
 }
 
+export function updateGameRulesMessage(rule) {
+  const message = document.querySelector("#gameRulesMessage");
+  if (message) {
+    if (rule === "untilMiss") {
+      message.textContent = "Your game style is until miss";
+    } else {
+      message.textContent = "Your game style is one by one";
+    }
+  }
+  console.log(message);
+}
+
 export function showToast(message, alert) {
   const toast = document.querySelector("#toast");
   if (toast) {
@@ -285,6 +297,8 @@ export default function playerMenu(twoPlayers, gameId) {
     selectMenuContainer.appendChild(playerMessage);
 
     const gameRulesMessage = document.createElement("div");
+    gameRulesMessage.id = "gameRulesMessage";
+    selectMenuContainer.appendChild(gameRulesMessage);
   }
 
   const choosingContainer = document.createElement("div");

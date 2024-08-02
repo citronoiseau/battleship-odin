@@ -190,21 +190,32 @@ function hideShips(container) {
 
 export function updateGameStatus(status) {
   const message = document.querySelector("#gameStatusMessage");
-  message.textContent = `Your game status is ${status}`;
+  if (message) {
+    message.textContent = `Your game status is ${status}`;
+  }
 }
 
 export function updatePlayerMessage(name) {
   const message = document.querySelector("#playerMessage");
-  message.textContent = `You are ${name}`;
+  if (message) {
+    message.textContent = `You are ${name}`;
+  }
 }
 
-export function showToast(message) {
+export function showToast(message, alert) {
   const toast = document.querySelector("#toast");
-  toast.textContent = message;
-  toast.className = "toast show";
-  setTimeout(() => {
-    toast.className = toast.className.replace("show", "");
-  }, 3000);
+  if (toast) {
+    toast.textContent = message;
+    if (alert) {
+      toast.className = "toast show alert";
+    } else {
+      toast.className = "toast show";
+    }
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 3000);
+  }
 }
 
 export default function playerMenu(twoPlayers, gameId) {
@@ -272,6 +283,8 @@ export default function playerMenu(twoPlayers, gameId) {
     const playerMessage = document.createElement("div");
     playerMessage.id = "playerMessage";
     selectMenuContainer.appendChild(playerMessage);
+
+    const gameRulesMessage = document.createElement("div");
   }
 
   const choosingContainer = document.createElement("div");

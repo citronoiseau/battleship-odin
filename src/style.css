@@ -70,18 +70,18 @@ button:hover {
   right: 0;
 }
 #closeButton {
-  width: 80px;
+  width: 60px;
   background-color: transparent;
   border: none;
-  padding: 15px;
+  padding: 10px;
   transition: all 0.2s ease-in;
   border-radius: 0 0 0 15px;
   margin: 0;
 }
 
 #closeButton img {
-  width: 35px;
-  height: 35px;
+  width: 25px;
+  height: 25px;
   transition: transform 0.3s ease;
 }
 #closeButton:hover {
@@ -377,6 +377,7 @@ button:hover {
   background-image: url("icons/hit.svg");
   background-position: center;
 }
+
 .cell.computer.ship.hit {
   background-color: #006e1ac8;
   border: 1px solid #006e1a00;
@@ -386,6 +387,8 @@ button:hover {
 .cell.hit {
   pointer-events: none;
   background-color: #3e6f698e;
+  background-image: url("icons/hit.svg");
+  background-position: center;
 }
 
 .cell {
@@ -435,6 +438,14 @@ button:hover {
 .turnMessage.hidden {
   visibility: hidden;
 }
+#joinGameDialog {
+  max-width: 500px;
+  height: 35vh;
+}
+#joinGameDialog .dialogTitle {
+  font-size: min(5vw, 2.2rem);
+}
+
 @media (max-width: 700px) {
   .startMenuContainer {
     display: flex;
@@ -443,6 +454,9 @@ button:hover {
   }
   .dialog {
     padding: 40px 10px 20px 10px;
+  }
+  #joinGameDialog {
+    height: 25vh;
   }
   #closeButton {
     padding: 15px 0 0 40px;
@@ -500,19 +514,18 @@ button:hover {
   background-color: #868b85;
   transform: translateY(-5px);
 }
-#joinGameDialog {
-  max-width: 500px;
-  height: 35vh;
-}
-#joinGameDialog .dialogTitle {
-  font-size: min(5vw, 2.5rem);
-}
+
 .form-element {
   display: flex;
   font-size: 1.2rem;
+  gap: 5px;
   flex-direction: column;
 }
-#confirmIdButton {
+#input.game-id {
+  border-radius: 5px;
+}
+#confirmIdButton,
+#cancelGameButton {
   font-size: min(5vw, 1.1rem);
   padding: 10px;
   width: 150px;
@@ -593,6 +606,10 @@ button:hover {
   animation:
     fadein 0.5s,
     fadeout 0.5s 2.5s;
+}
+
+.toast.show.alert {
+  background-color: #8c4946;
 }
 
 @keyframes fadein {

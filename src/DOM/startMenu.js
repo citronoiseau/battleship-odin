@@ -16,7 +16,7 @@ function choosingModeButtons() {
     buttonContainer.removeChild(buttonContainer.firstChild);
   }
   const singleplayerButton = document.createElement("button");
-  singleplayerButton.textContent = "Singleplayer";
+  singleplayerButton.textContent = "Single player";
   buttonContainer.appendChild(singleplayerButton);
 
   const multiplayerButton = document.createElement("button");

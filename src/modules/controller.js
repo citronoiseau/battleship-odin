@@ -10,7 +10,7 @@ import { changeMessage } from "../DOM/gameMenu";
 
 export const gameParams = (function () {
   let gameMode = "playerVsComputer";
-  let gameStyle = "oneByOne";
+  let gameStyle = "untilMiss";
 
   const changeGameMode = function () {
     if (gameMode === "playerVsComputer") {

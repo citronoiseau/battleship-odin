@@ -13,7 +13,7 @@ function createFirstParagraph(parent) {
   );
 
   const secondParagraph = listCreator(
-    "To rotate a ship, right-click on it.",
+    "To rotate a ship, left-click on it.",
     parent,
   );
 
@@ -22,7 +22,7 @@ function createFirstParagraph(parent) {
     parent,
   );
   const fourthParagraph = listCreator(
-    "In a two-player game, the first player clicks 'Pass selecting to other player' after placing their ships. The second player places their ships and clicks 'Finish selecting'. Finally, the first player clicks 'Start your game' to begin.",
+    "In a two-player single player game, the first player clicks 'Pass selecting to other player' after placing their ships. The second player places their ships and clicks 'Finish selecting'. Finally, the first player clicks 'Start your game' to begin.",
     parent,
   );
 }

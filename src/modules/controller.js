@@ -210,7 +210,10 @@ const smartComputer = (function () {
     const x = Math.floor(Math.random() * 10);
     const y = Math.floor(Math.random() * 10);
 
-    if (!waitingPlayer.board.board[x][y].hit) {
+    if (
+      !waitingPlayer.board.board[x][y].hit &&
+      !waitingPlayer.board.board[x][y].boardHit
+    ) {
       return [x, y];
     }
     return randomizeCoords();
@@ -259,6 +262,7 @@ const smartComputer = (function () {
       while (
         !isValidCell(x, y) ||
         waitingPlayer.board.board[x][y].hit ||
+        waitingPlayer.board.board[x][y].boardHit ||
         computerMemory.directionsTried[computerMemory.direction]
       ) {
         computerMemory.directionsTried[computerMemory.direction] = true;
@@ -280,6 +284,7 @@ const smartComputer = (function () {
       restartComputerMemory();
       [x, y] = randomizeCoords();
     }
+    console.log(x, y);
     return [x, y];
   };
 

@@ -70,6 +70,12 @@ export function renderBoard(board, typeOfPlayer) {
       } else {
         cell.classList.remove("hit");
       }
+
+      if (board.board[i][j].boardHit) {
+        cell.classList.add("boardHit");
+      } else {
+        cell.classList.remove("boardHit");
+      }
     }
   }
 }
@@ -131,7 +137,7 @@ function checkoutNeighborCells(gameboard, cells) {
           !cell.classList.contains("hit") &&
           !cell.classList.contains("ship")
         ) {
-          cell.classList.add("hit");
+          cell.classList.add("boardHit");
         }
       }
     });

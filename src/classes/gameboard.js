@@ -24,6 +24,7 @@ export default class GameBoard {
         board[i][j] = {
           ship: null,
           hit: false,
+          boardHit: false,
         };
       }
     }
@@ -149,11 +150,11 @@ export default class GameBoard {
   }
 
   receiveAttack(x, y) {
+    if (this.board[x][y].hit || this.board[x][y].boardHit) {
+      return;
+    }
     const ship = this.getShip(x, y);
     if (ship) {
-      if (this.board[x][y].hit) {
-        return;
-      }
       ship.hit();
       this.board[x][y].hit = true;
 
@@ -166,6 +167,7 @@ export default class GameBoard {
       }
       return;
     }
+
     this.board[x][y].hit = true;
   }
 
@@ -186,7 +188,9 @@ export default class GameBoard {
           const hitY = startY + j;
 
           if (hitX >= 0 && hitX < 10 && hitY >= 0 && hitY < 10) {
-            this.board[hitX][hitY].hit = true;
+            if (!this.board[hitX][hitY].hit && !this.board[hitX][hitY].ship) {
+              this.board[hitX][hitY].boardHit = true;
+            }
           }
         }
       }
@@ -198,7 +202,9 @@ export default class GameBoard {
           const hitY = y + i;
 
           if (hitX >= 0 && hitX < 10 && hitY >= 0 && hitY < 10) {
-            this.board[hitX][hitY].hit = true;
+            if (!this.board[hitX][hitY].hit && !this.board[hitX][hitY].ship) {
+              this.board[hitX][hitY].boardHit = true;
+            }
           }
         }
       }

@@ -253,9 +253,9 @@ export default function playerMenu(twoPlayers, gameId) {
   if (gameId) {
     multiplayer = true;
 
-    const gameIdContainer = document.createElement("div");
-    gameIdContainer.classList.add("gameIdContainer");
-    selectMenuContainer.appendChild(gameIdContainer);
+    const multiplayerInfoContainer = document.createElement("div");
+    multiplayerInfoContainer.classList.add("gameIdContainer");
+    selectMenuContainer.appendChild(multiplayerInfoContainer);
 
     const gameIdMessage = document.createElement("span");
     gameIdMessage.textContent = "Your game id: ";
@@ -285,20 +285,20 @@ export default function playerMenu(twoPlayers, gameId) {
     tooltipText.textContent = "Left-click to copy";
     id.appendChild(tooltipText);
 
-    gameIdContainer.appendChild(gameIdMessage);
-    gameIdContainer.appendChild(id);
+    multiplayerInfoContainer.appendChild(gameIdMessage);
+    multiplayerInfoContainer.appendChild(id);
 
     const gameStatusMessage = document.createElement("div");
     gameStatusMessage.id = "gameStatusMessage";
-    selectMenuContainer.appendChild(gameStatusMessage);
+    multiplayerInfoContainer.appendChild(gameStatusMessage);
 
     const playerMessage = document.createElement("div");
     playerMessage.id = "playerMessage";
-    selectMenuContainer.appendChild(playerMessage);
+    multiplayerInfoContainer.appendChild(playerMessage);
 
     const gameRulesMessage = document.createElement("div");
     gameRulesMessage.id = "gameRulesMessage";
-    selectMenuContainer.appendChild(gameRulesMessage);
+    multiplayerInfoContainer.appendChild(gameRulesMessage);
   }
 
   const choosingContainer = document.createElement("div");

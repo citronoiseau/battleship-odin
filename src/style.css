@@ -543,22 +543,26 @@ button:hover {
 .gameIdContainer {
   font-family: "Inconsolata", monospace;
   background-color: #636763;
-  font-size: min(5vw, 1.3rem);
+  font-size: min(5vw, 1rem);
   color: #f6f5e3;
   border-radius: 15px;
   text-align: center;
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 .gameId {
   transition: all 0.2s ease-in-out;
-  padding: 5px;
   border-radius: 15px;
+  background-color: #474a47;
   position: relative;
   display: inline-block;
   cursor: pointer;
+  padding: 5px;
 }
 .gameId:hover {
-  background-color: #474a47;
+  background-color: #353735;
 }
 
 .gameId .tooltiptext {

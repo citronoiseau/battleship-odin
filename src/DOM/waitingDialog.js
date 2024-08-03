@@ -13,6 +13,12 @@ export default function createWaitDialog() {
   dialogTitle.classList.add("dialogTitle");
   dialog.appendChild(dialogTitle);
 
+  const spinner = document.createElement("div");
+  spinner.classList.add("spinner");
+  spinner.classList.add("small");
+  spinner.style.display = "block";
+  dialog.appendChild(spinner);
+
   const buttonContainer = document.createElement("div");
   dialog.appendChild(buttonContainer);
   const button = cancelGameButton(buttonContainer, dialog);

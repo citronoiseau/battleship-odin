@@ -15,12 +15,13 @@ const gameServerHost = "votrubac.pythonanywhere.com";
 let currentGameStatus;
 let statusInterval;
 let turnInterval;
+
 let readyplayers = 0;
 
 export const gameParamsMultiplayer = (function () {
   let gameStyle = "untilMiss";
   let gameId;
-  let isWin = false;
+  let intervalActive = true;
 
   const changeGameStyle = function () {
     if (gameStyle === "oneByOne") {
@@ -38,25 +39,24 @@ export const gameParamsMultiplayer = (function () {
     gameId = newGameId;
   };
 
-  const setIsWin = function () {
-    isWin = !isWin;
-  };
-
-  const checkIsWin = function () {
-    return isWin;
-  };
-
   const getGameId = function () {
     return gameId;
   };
 
-  const clearIntervals = function () {
-    clearInterval(statusInterval);
-    clearInterval(turnInterval);
-  };
-
   const resetGameStatus = function () {
     currentGameStatus = null;
+  };
+
+  const isIntervalActive = function () {
+    return intervalActive;
+  };
+
+  const offInterval = function () {
+    intervalActive = false;
+  };
+
+  const onInterval = function () {
+    intervalActive = true;
   };
 
   return {
@@ -64,10 +64,10 @@ export const gameParamsMultiplayer = (function () {
     getGameStyle,
     updateGameId,
     getGameId,
-    setIsWin,
-    checkIsWin,
-    clearIntervals,
     resetGameStatus,
+    isIntervalActive,
+    offInterval,
+    onInterval,
   };
 })();
 
@@ -122,18 +122,20 @@ async function createGame(gameStyle) {
   return apiCall(`https://${gameServerHost}/new_game?turn_rule=${turnRule}`);
 }
 
-function updatePlayerReady(players) {
+function updatePlayerReady(readyPlayers, joinedPlayers) {
   const [player] = handlePlayersMultiplayer.getPlayers();
   if (player) {
     const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
-    if (players.includes(enemyName)) {
+    if (readyPlayers.includes(enemyName)) {
       showToast(`${enemyName} is ready`);
-    } else if (players.length === 1) {
+    } else if (joinedPlayers === 1) {
+      showToast(`${enemyName} hasn't joined yet`);
+    } else if (!readyPlayers.includes(enemyName)) {
       showToast(`${enemyName} is not ready`);
-    } else if (players.length === 0) {
+    } else if (readyPlayers.length === 0) {
       showToast(`None of the players is ready`);
     }
-    readyplayers = players.length;
+    readyplayers = readyPlayers.length;
   }
 }
 
@@ -149,6 +151,7 @@ async function handleGameStatusChange(newStatus) {
     if (player.name === "Player 1") {
       showToast(`Player 2 has joined`);
     }
+    updateGameRulesMessage(gameParamsMultiplayer.getGameStyle());
     updatePlayerMessage(player.name);
   }
   if (newStatus.state === "TURN") {
@@ -162,6 +165,7 @@ async function handleGameStatusChange(newStatus) {
     placeEnemyHit(newStatus, player);
     const { winner } = newStatus;
     resetGame();
+    gameParamsMultiplayer.offInterval();
     if (winner === player.name) {
       changeMessage(`You won!`);
     } else {
@@ -175,25 +179,27 @@ export async function getGameStatus(gameId) {
   return apiCall(`https://${gameServerHost}/status/${gameId}`);
 }
 
-async function checkGameStatus(gameId) {
+async function checkGameStatus(gameId, fromTurns) {
   try {
     const fullGameStatus = await getGameStatus(gameId);
-
+    if (!gameParamsMultiplayer.isIntervalActive()) return;
     if (fullGameStatus.state !== currentGameStatus) {
       currentGameStatus = fullGameStatus.state;
       handleGameStatusChange(fullGameStatus);
     }
     if (readyplayers !== fullGameStatus.ready_players.length) {
       const players = fullGameStatus.ready_players;
-      updatePlayerReady(players);
+      updatePlayerReady(players, fullGameStatus.joined_players.length);
+    }
+    if (!fromTurns) {
+      statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
     }
 
-    statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
     console.log(fullGameStatus);
     return fullGameStatus;
   } catch (error) {
     console.error("Failed to fetch game status:", error);
-    statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
+    checkGameStatus(gameId);
   }
 }
 
@@ -211,11 +217,10 @@ export async function joinGame(gameId) {
 }
 
 export function resetGame() {
-  gameParamsMultiplayer.clearIntervals();
-  gameParamsMultiplayer.setIsWin();
+  clearInterval(statusInterval);
+  clearInterval(turnInterval);
   handlePlayersMultiplayer.resetPlayers();
   gameParamsMultiplayer.resetGameStatus();
-  clearInterval(turnInterval);
   readyplayers = 0;
 }
 
@@ -233,9 +238,10 @@ function placeEnemyHit(status, player) {
 }
 
 async function passTurns() {
+  if (!gameParamsMultiplayer.isIntervalActive()) return;
   const gameId = gameParamsMultiplayer.getGameId();
   const [player] = handlePlayersMultiplayer.getPlayers();
-  const status = await checkGameStatus(gameId);
+  const status = await checkGameStatus(gameId, true);
   if (player) {
     placeEnemyHit(status, player);
   }
@@ -286,7 +292,8 @@ export async function setBoard(gameId, playerId, board) {
 }
 
 export async function initializeGameMultiplayer() {
-  gameParamsMultiplayer.clearIntervals();
+  resetGame();
+  gameParamsMultiplayer.onInterval();
   try {
     const data = createGame(gameParamsMultiplayer.getGameStyle());
     data.then((response) => {
@@ -307,7 +314,7 @@ function checkIfValidHit() {
   if (handlePlayersMultiplayer.getActivePlayer() === null) {
     return false;
   }
-  if (gameParamsMultiplayer.checkIsWin()) {
+  if (!gameParamsMultiplayer.isIntervalActive()) {
     return false;
   }
   return true;

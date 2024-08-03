@@ -59,6 +59,11 @@ function multiplayer() {
   while (buttonContainer.firstChild) {
     buttonContainer.removeChild(buttonContainer.firstChild);
   }
+  const spinner = document.createElement("div");
+  spinner.classList.add("spinner");
+  spinner.style.display = "none";
+  buttonContainer.appendChild(spinner);
+
   createCreateGameButton(buttonContainer);
 
   const joinGameButton = document.createElement("button");

@@ -174,9 +174,12 @@ export function createCreateGameButton(parent) {
     parent,
     "Create your game!",
   );
+  const spinner = document.querySelector(".spinner");
 
   createGameButton.addEventListener("click", () => {
+    spinner.style.display = "block";
     initializeGameMultiplayer().then((response) => {
+      spinner.style.display = "none";
       changeScreens("selecting", false, response.id);
     });
   });
@@ -206,6 +209,7 @@ export function createReturnToStartMenuButton(parent, fromMenu, multiplayer) {
 
   returnButton.addEventListener("click", () => {
     if (multiplayer) {
+      gameParamsMultiplayer.offInterval();
       resetGame();
     }
     if (!fromMenu && !multiplayer) {

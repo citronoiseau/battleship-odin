@@ -543,7 +543,7 @@ button:hover {
 .gameIdContainer {
   font-family: "Inconsolata", monospace;
   background-color: #636763;
-  font-size: min(5vw, 1rem);
+  font-size: min(3vw, 1rem);
   color: #f6f5e3;
   border-radius: 15px;
   text-align: center;

@@ -136,9 +136,7 @@ export function createStartGameButton(parent, gameId) {
       const gameBoard = firstPlayer.board.board;
       setBoard(gameId, firstPlayer.id, gameBoard);
       setTimeout(() => {
-        setPlayerReady(true).then((response) => {
-          console.log(response);
-        });
+        setPlayerReady(true);
       }, "800");
 
       let status;
@@ -290,7 +288,6 @@ export function cancelGameButton(parent, dialog) {
         setTimeout(() => {
           dialog.close();
         }, 300);
-        console.log(response);
       } else {
         showToast("Game is starting already!", true);
       }

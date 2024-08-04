@@ -111,9 +111,9 @@ export const handlePlayersMultiplayer = (function () {
 
 async function apiCall(url) {
   const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
-  }
+  // if (!response.ok) {
+  //   throw new Error(`HTTP error! Status: ${response.status}`);
+  // }
   return response.json();
 }
 
@@ -204,6 +204,8 @@ async function checkGameStatus(gameId, fromTurns) {
 }
 
 export async function joinGame(gameId) {
+  resetGame();
+  gameParamsMultiplayer.onInterval();
   const data = apiCall(`https://${gameServerHost}/join_game/${gameId}`);
   data.then((response) => {
     handlePlayersMultiplayer.initializePlayer(
@@ -335,7 +337,6 @@ export function registerPlayerHitMultiplayer(cell) {
     const gameId = gameParamsMultiplayer.getGameId();
     const result = sendHit(gameId, player.id, x, y);
     result.then((response) => {
-      console.log(response);
       renderMultiplayerBoard(x, y, response.result, response.cells);
     });
   }

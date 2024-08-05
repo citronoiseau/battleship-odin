@@ -285,9 +285,12 @@ export function cancelGameButton(parent, dialog) {
     setPlayerReady(false).then((response) => {
       if (!response.ready) {
         dialog.classList.remove("active");
+        dialog.classList.add("fadeout");
+
         setTimeout(() => {
           dialog.close();
-        }, 300);
+          dialog.classList.remove("fadeout");
+        }, 250);
       } else {
         showToast("Game is starting already!", true);
       }

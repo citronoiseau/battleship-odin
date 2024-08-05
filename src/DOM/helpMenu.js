@@ -59,9 +59,12 @@ export default function createDialog() {
 
   closeButton.addEventListener("click", () => {
     dialog.classList.remove("active");
+    dialog.classList.add("fadeout");
+
     setTimeout(() => {
       dialog.close();
-    }, 300);
+      dialog.classList.remove("fadeout");
+    }, 250);
   });
 
   const dialogTitle = document.createElement("div");

@@ -76,6 +76,10 @@ function handleDrop(event) {
 }
 
 function removeShip(cell) {
+  if (window.innerWidth < 700) {
+    return;
+  }
+
   const shipId = cell.dataset.id;
   const board = cell.closest(".gameboard");
   const gameboardContainer = board.closest(".gameboardContainer");

@@ -284,7 +284,7 @@ button:hover {
 }
 .boardTextContainer .helpingMessage {
   padding-top: 15px;
-  font-size: min(5vw, 1.1rem);
+  font-size: 1.1rem;
 }
 
 .shipContainer > div.rotated {
@@ -470,7 +470,7 @@ button:hover {
   visibility: hidden;
 }
 #joinGameDialog {
-  max-width: 500px;
+  max-width: 350px;
   height: 35vh;
 }
 #joinGameDialog .dialogTitle {
@@ -567,7 +567,7 @@ input#gameId:focus {
 
 #confirmIdButton,
 #cancelGameButton {
-  font-size: min(5vw, 1.1rem);
+  font-size: 1.1rem;
   padding: 10px;
   width: 150px;
   margin-top: 20px;
@@ -576,7 +576,7 @@ input#gameId:focus {
 .gameIdContainer {
   font-family: "Inconsolata", monospace;
   background-color: #636763;
-  font-size: min(3vw, 1.1rem);
+  font-size: 1.1rem;
   color: #f6f5e3;
   border-radius: 15px;
   text-align: center;

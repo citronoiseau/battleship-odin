@@ -183,7 +183,6 @@ async function handleGameStatusChange(newStatus) {
       changeMessage(`${winner} won!`);
     }
   }
-  console.log("Game status updated to:", newStatus.state);
 }
 
 export async function getGameStatus(gameId) {
@@ -206,11 +205,8 @@ async function checkGameStatus(gameId, fromTurns) {
     if (!fromTurns) {
       statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
     }
-
-    console.log(fullGameStatus);
     return fullGameStatus;
   } catch (error) {
-    console.error("Failed to fetch game status:", error);
     checkGameStatus(gameId);
   }
 }
@@ -225,7 +221,6 @@ export async function joinGame(gameId) {
     gameParamsMultiplayer.updateGameId(data.id);
     return { ok: true, data };
   } catch (error) {
-    console.log(error);
     return { ok: false };
   }
 }

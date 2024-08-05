@@ -1,9 +1,12 @@
 /* eslint-disable no-plusplus */
 import Player from "../classes/player";
-import { renderBoard, renderMultiplayerBoard } from "../DOM/boardDOM";
+import {
+  renderBoard,
+  renderMultiplayerBoard,
+  toggleBoard,
+} from "../DOM/boardDOM";
 import { changeMessage } from "../DOM/gameMenu";
 import {
-  updateGameStatus,
   updatePlayerMessage,
   updateGameRulesMessage,
   showToast,
@@ -142,16 +145,14 @@ function updatePlayerReady(readyPlayers, joinedPlayers) {
 async function handleGameStatusChange(newStatus) {
   const [player] = handlePlayersMultiplayer.getPlayers();
   if (newStatus.state === "LOBBY") {
-    updateGameStatus(newStatus.state);
     updatePlayerMessage(player.name);
-    updateGameRulesMessage(gameParamsMultiplayer.getGameStyle());
+    updateGameRulesMessage(newStatus.turn_rule);
   }
   if (newStatus.state === "SETUP") {
-    updateGameStatus(newStatus.state);
     if (player.name === "Player 1") {
       showToast(`Player 2 has joined`);
     }
-    updateGameRulesMessage(gameParamsMultiplayer.getGameStyle());
+    updateGameRulesMessage(newStatus.turn_rule);
     updatePlayerMessage(player.name);
   }
   if (newStatus.state === "TURN") {
@@ -206,16 +207,16 @@ async function checkGameStatus(gameId, fromTurns) {
 export async function joinGame(gameId) {
   resetGame();
   gameParamsMultiplayer.onInterval();
-  const data = apiCall(`https://${gameServerHost}/join_game/${gameId}`);
-  data.then((response) => {
-    handlePlayersMultiplayer.initializePlayer(
-      response.player.id,
-      response.player.name,
-    );
+  try {
+    const data = await apiCall(`https://${gameServerHost}/join_game/${gameId}`);
+    handlePlayersMultiplayer.initializePlayer(data.player.id, data.player.name);
     checkGameStatus(gameId);
-    gameParamsMultiplayer.updateGameId(response.id);
-  });
-  return data;
+    gameParamsMultiplayer.updateGameId(data.id);
+    return { ok: true, data };
+  } catch (error) {
+    console.log(error);
+    return { ok: false };
+  }
 }
 
 export function resetGame() {
@@ -252,9 +253,11 @@ async function passTurns() {
 
   if (!status.winner) {
     if (activePlayer === player.name) {
+      toggleBoard(true);
       changeMessage(`Your turn!`);
       handlePlayersMultiplayer.setActivePlayer();
     } else {
+      toggleBoard(false);
       handlePlayersMultiplayer.resetActivePlayer();
       changeMessage(`${activePlayer} turn!`);
     }

@@ -76,6 +76,11 @@ export function renderBoard(board, typeOfPlayer) {
       } else {
         cell.classList.remove("boardHit");
       }
+      if (board.board[i][j].shipKill) {
+        cell.classList.add("shipKill");
+      } else {
+        cell.classList.remove("shipKill");
+      }
     }
   }
 }
@@ -104,6 +109,17 @@ export function areCellsHidden(typeOfPlayer) {
   return hiddenCell !== null;
 }
 
+export function toggleBoard(isActive) {
+  const board = document.querySelector("#human2");
+  if (isActive) {
+    board.classList.remove("inactive");
+    board.classList.add("active");
+  } else {
+    board.classList.remove("active");
+    board.classList.add("inactive");
+  }
+}
+
 // multiplayer checkout
 
 function isWithinBounds(x, y) {
@@ -113,6 +129,7 @@ function isWithinBounds(x, y) {
 function checkoutNeighborCells(gameboard, cells) {
   cells.forEach(([x, y]) => {
     const neighborCells = [
+      [0, 0],
       [-1, -1],
       [-1, 0],
       [-1, 1],
@@ -131,7 +148,9 @@ function checkoutNeighborCells(gameboard, cells) {
         const cell = gameboard.querySelector(
           `.cell[data-row="${newX}"][data-column="${newY}"]`,
         );
-
+        if (cell && cell.classList.contains("ship")) {
+          cell.classList.add("shipKill");
+        }
         if (
           cell &&
           !cell.classList.contains("hit") &&

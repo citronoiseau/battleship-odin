@@ -21,6 +21,8 @@ let turnInterval;
 
 let readyplayers = 0;
 
+let enemyStatus;
+
 export const gameParamsMultiplayer = (function () {
   let gameStyle = "untilMiss";
   let gameId;
@@ -130,13 +132,21 @@ function updatePlayerReady(readyPlayers, joinedPlayers) {
   if (player) {
     const enemyName = player.name === "Player 1" ? "Player 2" : "Player 1";
     if (readyPlayers.includes(enemyName)) {
-      showToast(`${enemyName} is ready`);
+      const newEnemyStatus = "READY";
+      if (newEnemyStatus !== enemyStatus) {
+        showToast(`${enemyName} is ready`);
+        enemyStatus = newEnemyStatus;
+      }
     } else if (joinedPlayers === 1) {
       showToast(`${enemyName} hasn't joined yet`);
     } else if (!readyPlayers.includes(enemyName)) {
-      showToast(`${enemyName} is not ready`);
-    } else if (readyPlayers.length === 0) {
-      showToast(`None of the players is ready`);
+      enemyStatus = "NOT_READY";
+      if (readyPlayers.includes(player.name)) {
+        showToast(`${enemyName} is not ready`);
+      }
+    }
+    if (readyPlayers.length === 0) {
+      enemyStatus = "NOT_READY";
     }
     readyplayers = readyPlayers.length;
   }
@@ -192,6 +202,7 @@ async function checkGameStatus(gameId, fromTurns) {
       const players = fullGameStatus.ready_players;
       updatePlayerReady(players, fullGameStatus.joined_players.length);
     }
+
     if (!fromTurns) {
       statusInterval = setTimeout(() => checkGameStatus(gameId), 5000);
     }

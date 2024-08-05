@@ -132,5 +132,9 @@ export default function startMenu() {
     dialog.classList.add("active");
   });
 
+  const toast = document.createElement("div");
+  toast.id = "toast";
+  startMenuContainer.appendChild(toast);
+
   return startMenuContainer;
 }

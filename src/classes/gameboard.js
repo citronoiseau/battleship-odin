@@ -25,6 +25,7 @@ export default class GameBoard {
           ship: null,
           hit: false,
           boardHit: false,
+          shipKill: false,
         };
       }
     }
@@ -191,6 +192,9 @@ export default class GameBoard {
             if (!this.board[hitX][hitY].hit && !this.board[hitX][hitY].ship) {
               this.board[hitX][hitY].boardHit = true;
             }
+            if (this.board[hitX][hitY].ship) {
+              this.board[hitX][hitY].shipKill = true;
+            }
           }
         }
       }
@@ -204,6 +208,9 @@ export default class GameBoard {
           if (hitX >= 0 && hitX < 10 && hitY >= 0 && hitY < 10) {
             if (!this.board[hitX][hitY].hit && !this.board[hitX][hitY].ship) {
               this.board[hitX][hitY].boardHit = true;
+            }
+            if (this.board[hitX][hitY].ship) {
+              this.board[hitX][hitY].shipKill = true;
             }
           }
         }

@@ -1,6 +1,7 @@
 import closeIcon from "../icons/close.svg";
 import { joinGame } from "../modules/controllerMultiplayer";
 import changeScreens from "./screenChanger";
+import { showToast } from "./playerMenu";
 
 export default function createJoinGameDialog() {
   const menu = document.querySelector(".startMenuContainer");
@@ -24,9 +25,12 @@ export default function createJoinGameDialog() {
 
   closeButton.addEventListener("click", () => {
     dialog.classList.remove("active");
+    dialog.classList.add("fadeout");
+
     setTimeout(() => {
       dialog.close();
-    }, 300);
+      dialog.classList.remove("fadeout");
+    }, 250);
   });
 
   const dialogTitle = document.createElement("div");
@@ -63,11 +67,19 @@ export default function createJoinGameDialog() {
   dialogForm.appendChild(formElement);
   dialogForm.appendChild(confirmIdButton);
 
-  dialogForm.addEventListener("submit", (event) => {
+  dialogForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const gameId = document.getElementById("gameId").value;
-    joinGame(gameId);
-    changeScreens("selecting", false, gameId);
+    try {
+      const response = await joinGame(gameId);
+      if (response.ok) {
+        changeScreens("selecting", false, gameId);
+      } else {
+        showToast("Invalid game id", true);
+      }
+    } catch (error) {
+      showToast("An error occurred", true);
+    }
   });
 
   dialog.appendChild(dialogForm);

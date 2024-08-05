@@ -188,30 +188,22 @@ function hideShips(container) {
   });
 }
 
-export function updateGameStatus(status) {
-  const message = document.querySelector("#gameStatusMessage");
-  if (message) {
-    message.textContent = `Your game status is ${status}`;
-  }
-}
-
 export function updatePlayerMessage(name) {
   const message = document.querySelector("#playerMessage");
   if (message) {
-    message.textContent = `You are ${name}`;
+    message.textContent = `Welcome, ${name}`;
   }
 }
 
 export function updateGameRulesMessage(rule) {
   const message = document.querySelector("#gameRulesMessage");
   if (message) {
-    if (rule === "untilMiss") {
+    if (rule === "TILL_MISS") {
       message.textContent = "Your game style is until miss";
     } else {
       message.textContent = "Your game style is one by one";
     }
   }
-  console.log(message);
 }
 
 export function showToast(message, alert) {
@@ -219,13 +211,14 @@ export function showToast(message, alert) {
   if (toast) {
     toast.textContent = message;
     if (alert) {
-      toast.className = "toast show alert";
+      toast.className = "toast alert show";
     } else {
       toast.className = "toast show";
     }
 
     setTimeout(() => {
       toast.classList.remove("show");
+      toast.classList.remove("alert");
     }, 3000);
   }
 }
@@ -248,57 +241,6 @@ export default function playerMenu(twoPlayers, gameId) {
 
     screenControlsContainer.appendChild(returnToStartMenuContainer);
     screenControlsContainer.appendChild(startGameButtonContainer);
-  }
-
-  if (gameId) {
-    multiplayer = true;
-
-    const multiplayerInfoContainer = document.createElement("div");
-    multiplayerInfoContainer.classList.add("gameIdContainer");
-    selectMenuContainer.appendChild(multiplayerInfoContainer);
-
-    const gameIdMessage = document.createElement("span");
-    gameIdMessage.textContent = "Your game id: ";
-
-    const id = document.createElement("span");
-    id.classList.add("gameId");
-    id.textContent = gameId;
-
-    const toast = document.createElement("div");
-    toast.id = "toast";
-    selectMenuContainer.appendChild(toast);
-
-    id.addEventListener("click", () => {
-      const textToCopy = gameId;
-      navigator.clipboard
-        .writeText(textToCopy)
-        .then(() => {
-          showToast(`Game ID copied to clipboard: ${gameId}`);
-        })
-        .catch((error) => {
-          console.error("Failed to copy text: ", error);
-        });
-    });
-
-    const tooltipText = document.createElement("span");
-    tooltipText.classList.add("tooltiptext");
-    tooltipText.textContent = "Left-click to copy";
-    id.appendChild(tooltipText);
-
-    multiplayerInfoContainer.appendChild(gameIdMessage);
-    multiplayerInfoContainer.appendChild(id);
-
-    const gameStatusMessage = document.createElement("div");
-    gameStatusMessage.id = "gameStatusMessage";
-    multiplayerInfoContainer.appendChild(gameStatusMessage);
-
-    const playerMessage = document.createElement("div");
-    playerMessage.id = "playerMessage";
-    multiplayerInfoContainer.appendChild(playerMessage);
-
-    const gameRulesMessage = document.createElement("div");
-    gameRulesMessage.id = "gameRulesMessage";
-    multiplayerInfoContainer.appendChild(gameRulesMessage);
   }
 
   const choosingContainer = document.createElement("div");
@@ -352,25 +294,65 @@ export default function playerMenu(twoPlayers, gameId) {
   boardControlsContainer.classList.add("boardControlsContainer");
   playerOneContainer.appendChild(boardControlsContainer);
 
-  const randomizeButtonContainer = document.createElement("div");
-  let randomizeButton;
   if (gameId) {
-    randomizeButton = createRandomizeButton(
-      randomizeButtonContainer,
-      false,
-      true,
-    );
-  } else {
-    randomizeButton = createRandomizeButton(
-      randomizeButtonContainer,
-      false,
-      false,
-    );
+    multiplayer = true;
+
+    const multiplayerInfoContainer = document.createElement("div");
+    multiplayerInfoContainer.classList.add("gameIdContainer");
+    boardControlsContainer.appendChild(multiplayerInfoContainer);
+
+    const playerMessage = document.createElement("div");
+    playerMessage.id = "playerMessage";
+    multiplayerInfoContainer.appendChild(playerMessage);
+
+    const gameIdMessage = document.createElement("span");
+    gameIdMessage.textContent = "Your game id: ";
+
+    const id = document.createElement("span");
+    id.classList.add("gameId");
+    id.textContent = gameId;
+
+    const toast = document.createElement("div");
+    toast.id = "toast";
+    selectMenuContainer.appendChild(toast);
+
+    id.addEventListener("click", () => {
+      const textToCopy = gameId;
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          showToast(`Game ID copied to clipboard: ${gameId}`);
+        })
+        .catch((error) => {
+          console.error("Failed to copy text: ", error);
+        });
+    });
+
+    const tooltipText = document.createElement("span");
+    tooltipText.classList.add("tooltiptext");
+    tooltipText.textContent = "Left-click to copy";
+    id.appendChild(tooltipText);
+
+    multiplayerInfoContainer.appendChild(gameIdMessage);
+    multiplayerInfoContainer.appendChild(id);
+
+    const gameRulesMessage = document.createElement("div");
+    gameRulesMessage.id = "gameRulesMessage";
+    multiplayerInfoContainer.appendChild(gameRulesMessage);
   }
+
+  const randomizeButtonContainer = document.createElement("div");
+  randomizeButtonContainer.classList.add("buttonContainer");
+  const randomizeButton = createRandomizeButton(
+    randomizeButtonContainer,
+    false,
+    gameId,
+  );
 
   randomizeButton.addEventListener("click", () => hideShips(selectionBoard));
 
   const clearButtonContainer = document.createElement("div");
+  clearButtonContainer.classList.add("buttonContainer");
   const clearButton = createClearButton(clearButtonContainer, false, gameId);
 
   clearButton.addEventListener("click", () => {

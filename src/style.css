@@ -9,14 +9,14 @@
 button {
   font-family: "Inconsolata", monospace;
   background-color: #777b76;
-  font-size: min(5vw, 1.5rem);
+  font-size: min(5vw, 1.3rem);
   color: #f6f5e3;
   border: none;
   padding: 20px;
   border-radius: 20px;
   margin: 0 15px 0 15px;
   transition: 0.2s ease-in-out;
-  width: 300px;
+  width: 280px;
 }
 button:hover {
   background-color: #999d98;
@@ -39,7 +39,7 @@ button:hover {
 
 .title {
   font-family: "Indie Flower", cursive;
-  font-size: 9vw;
+  font-size: min(18vw, 6rem);
   color: #394f41;
 }
 
@@ -70,18 +70,18 @@ button:hover {
   right: 0;
 }
 #closeButton {
-  width: 60px;
+  width: 35px;
   background-color: transparent;
   border: none;
-  padding: 10px;
+  padding: 8px 15px 5px 5px;
   transition: all 0.2s ease-in;
   border-radius: 0 0 0 15px;
   margin: 0;
 }
 
 #closeButton img {
-  width: 25px;
-  height: 25px;
+  width: 23px;
+  height: 23px;
   transition: transform 0.3s ease;
 }
 #closeButton:hover {
@@ -94,14 +94,12 @@ button:hover {
 
 .dialog {
   top: 50%;
-  height: 0;
-  overflow: hidden;
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.4s ease-out;
   border: none;
-  padding: 40px 40px 20px 40px;
+  padding: 20px 40px 20px 40px;
   visibility: hidden;
   border-radius: 15px;
   box-shadow:
@@ -115,12 +113,17 @@ button:hover {
   flex-direction: column;
   gap: 15px;
   align-items: center;
+  overflow-y: auto;
 }
 
 .dialog.active {
-  overflow-y: auto;
-  opacity: 1;
   visibility: visible;
+  opacity: 1;
+  transition: opacity 0.25s ease-in;
+}
+.dialog.fadeout {
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
 }
 
 .dialog .dialogTitle {
@@ -193,7 +196,10 @@ button:hover {
   justify-content: center;
 }
 .screenControlsContainer {
-  margin: 50px 0 20px 0;
+  margin: 50px 0 10px 0;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
 }
 
 .screenControlsContainer,
@@ -210,6 +216,9 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .ships,
@@ -223,7 +232,7 @@ button:hover {
 }
 .boardControlsContainer button {
   font-size: 1.1rem;
-  width: min(30vw, 200px);
+  width: 300px;
   opacity: 1;
   visibility: visible;
 }
@@ -240,8 +249,8 @@ button:hover {
 .screenControlsContainer button,
 .controlButtonsContainer button,
 .buttonsContainer button {
-  font-size: min(4vw, 1.4rem);
-  width: min(40vw, 350px);
+  font-size: 1.1rem;
+  width: 300px;
 }
 
 .choosingBoards {
@@ -265,7 +274,7 @@ button:hover {
 .boardTextContainer {
   font-family: "Inconsolata", monospace;
   background-color: #777b76;
-  font-size: min(5vw, 1.5rem);
+  font-size: min(3vw, 1.3rem);
   color: #f6f5e3;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -305,6 +314,14 @@ button:hover {
   grid-template-columns: 20px auto;
   gap: 5px;
   padding-left: 20px;
+}
+
+.gameboard.active {
+  pointer-events: all;
+}
+
+.gameboard.inactive {
+  pointer-events: none;
 }
 
 .gameboard > .cells {
@@ -396,6 +413,11 @@ button:hover {
   background-color: #3e6f698e;
 }
 
+.cell.ship.shipKill,
+.cell.computer.ship.shipKill {
+  background-color: #6c2727d5;
+}
+
 .cell.hit svg {
   color: #2c3634ef;
 }
@@ -437,6 +459,7 @@ button:hover {
   margin-top: 40px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .buttonsContainer button {
@@ -451,7 +474,7 @@ button:hover {
   height: 35vh;
 }
 #joinGameDialog .dialogTitle {
-  font-size: min(5vw, 2.2rem);
+  font-size: min(5vw, 2rem);
 }
 
 @media (max-width: 700px) {
@@ -461,24 +484,18 @@ button:hover {
     align-items: center;
   }
   .dialog {
-    padding: 40px 10px 20px 10px;
+    padding: 40px 20px 20px 30px;
   }
   #joinGameDialog {
     height: 25vh;
-  }
-  #closeButton {
-    padding: 15px 0 0 40px;
-  }
-  #closeButton img {
-    width: 25px;
-    height: 25px;
   }
   .cell,
   .shipPart {
     width: 30px;
     height: 30px;
   }
-  .hit {
+  .cell.hit,
+  .cell.ship.hit {
     background-image: url("icons/hit2.svg");
   }
   .playerOneContainer {
@@ -526,12 +543,28 @@ button:hover {
 .form-element {
   display: flex;
   font-size: 1.2rem;
-  gap: 5px;
+  gap: 2px;
   flex-direction: column;
 }
-#input.game-id {
-  border-radius: 5px;
+label {
+  font-size: 1.1rem;
 }
+input#gameId {
+  padding: 5px;
+  border-radius: 3px;
+  color: #f6f5e3;
+  background-color: #202b23;
+}
+
+input#gameId::placeholder {
+  color: #b7b5b5;
+}
+
+input#gameId:focus {
+  border-color: #f6f5e3;
+  outline: none;
+}
+
 #confirmIdButton,
 #cancelGameButton {
   font-size: min(5vw, 1.1rem);
@@ -543,7 +576,7 @@ button:hover {
 .gameIdContainer {
   font-family: "Inconsolata", monospace;
   background-color: #636763;
-  font-size: min(3vw, 1rem);
+  font-size: min(3vw, 1.1rem);
   color: #f6f5e3;
   border-radius: 15px;
   text-align: center;
@@ -551,6 +584,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: 300px;
 }
 .gameId {
   transition: all 0.2s ease-in-out;

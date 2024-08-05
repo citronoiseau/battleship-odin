@@ -5,7 +5,7 @@ export default function createWaitDialog() {
 
   const dialog = document.createElement("dialog");
   dialog.classList.add("dialog");
-  dialog.id = "joinGameDialog";
+  dialog.id = "waitDialog";
   menu.appendChild(dialog);
 
   const dialogTitle = document.createElement("div");

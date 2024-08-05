@@ -345,6 +345,10 @@ export default function playerMenu(twoPlayers, gameId) {
     multiplayerInfoContainer.appendChild(gameRulesMessage);
   }
 
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.classList.add("buttonsContainer");
+  boardControlsContainer.appendChild(buttonsContainer);
+
   const randomizeButtonContainer = document.createElement("div");
   randomizeButtonContainer.classList.add("buttonContainer");
   const randomizeButton = createRandomizeButton(
@@ -362,8 +366,8 @@ export default function playerMenu(twoPlayers, gameId) {
   clearButton.addEventListener("click", () => {
     restartShips(ships);
   });
-  boardControlsContainer.appendChild(randomizeButtonContainer);
-  boardControlsContainer.appendChild(clearButtonContainer);
+  buttonsContainer.appendChild(randomizeButtonContainer);
+  buttonsContainer.appendChild(clearButtonContainer);
 
   if (twoPlayers) {
     const controlButtonsContainer = document.createElement("div");

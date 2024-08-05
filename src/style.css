@@ -469,12 +469,21 @@ button:hover {
 .turnMessage.hidden {
   visibility: hidden;
 }
-#joinGameDialog {
+#joinGameDialog,
+#waitDialog {
   max-width: 350px;
   height: 35vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-#joinGameDialog .dialogTitle {
+
+#joinGameDialog .dialogTitle,
+#waitDialog .dialogTitle {
   font-size: min(5vw, 2rem);
+}
+#waitDialog {
+  max-width: 450px;
 }
 
 @media (max-width: 700px) {
@@ -585,6 +594,11 @@ input#gameId:focus {
   flex-direction: column;
   gap: 5px;
   width: 300px;
+}
+
+.boardControlsContainer .buttonsContainer {
+  padding: 0;
+  margin: 0;
 }
 .gameId {
   transition: all 0.2s ease-in-out;

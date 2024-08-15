@@ -178,7 +178,9 @@ export function createCreateGameButton(parent) {
     spinner.style.display = "block";
     initializeGameMultiplayer().then((response) => {
       spinner.style.display = "none";
-      changeScreens("selecting", false, response.id);
+      if (response && response.id) {
+        changeScreens("selecting", false, response.id);
+      }
     });
   });
   return createGameButton;

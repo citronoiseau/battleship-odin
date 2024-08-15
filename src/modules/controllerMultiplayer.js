@@ -305,19 +305,25 @@ export async function setBoard(gameId, playerId, board) {
 export async function initializeGameMultiplayer() {
   resetGame();
   gameParamsMultiplayer.onInterval();
+
+  const duration = 10000;
+
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Request timed out")), duration),
+  );
+
   try {
-    const data = createGame(gameParamsMultiplayer.getGameStyle());
-    data.then((response) => {
-      handlePlayersMultiplayer.initializePlayer(
-        response.player.id,
-        response.player.name,
-      );
-      checkGameStatus(response.id);
-      gameParamsMultiplayer.updateGameId(response.id);
-    });
+    const data = await Promise.race([
+      createGame(gameParamsMultiplayer.getGameStyle()),
+      timeoutPromise,
+    ]);
+
+    handlePlayersMultiplayer.initializePlayer(data.player.id, data.player.name);
+    checkGameStatus(data.id);
+    gameParamsMultiplayer.updateGameId(data.id);
     return data;
   } catch (error) {
-    console.error("There was an error with the fetch operation:", error);
+    showToast("Please try again!", true);
   }
 }
 

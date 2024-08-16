@@ -526,6 +526,12 @@ button:hover {
   .gameboard {
     padding-left: 0px;
   }
+  .infoContainer {
+    padding: 5px;
+  }
+  .boardsContainer {
+    gap: 10px;
+  }
 }
 
 @media (max-width: 1000px) {

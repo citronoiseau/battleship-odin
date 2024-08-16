@@ -110,13 +110,18 @@ export function areCellsHidden(typeOfPlayer) {
 }
 
 export function toggleBoard(isActive) {
-  const board = document.querySelector("#human2");
+  const board = document.querySelector("#human");
+  const board2 = document.querySelector("#human2");
   if (isActive) {
-    board.classList.remove("inactive");
-    board.classList.add("active");
-  } else {
     board.classList.remove("active");
     board.classList.add("inactive");
+    board2.classList.remove("inactive");
+    board2.classList.add("active");
+  } else {
+    board2.classList.remove("active");
+    board2.classList.add("inactive");
+    board.classList.remove("inactive");
+    board.classList.add("active");
   }
 }
 

@@ -16,11 +16,11 @@ function choosingModeButtons() {
     buttonContainer.removeChild(buttonContainer.firstChild);
   }
   const singleplayerButton = document.createElement("button");
-  singleplayerButton.textContent = "Single player";
+  singleplayerButton.textContent = "Local match";
   buttonContainer.appendChild(singleplayerButton);
 
   const multiplayerButton = document.createElement("button");
-  multiplayerButton.textContent = "Multiplayer";
+  multiplayerButton.textContent = "Online match";
   buttonContainer.appendChild(multiplayerButton);
 
   multiplayerButton.addEventListener("click", multiplayer);

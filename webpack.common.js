@@ -10,7 +10,7 @@ module.exports = {
       template: "./src/index.html",
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: "src/icons/rudder.png", to: "icons/rudder.png" }],
+      patterns: [{ from: "src/icons/rudder.ico", to: "icons/rudder.ico" }],
     }),
   ],
   output: {

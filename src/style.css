@@ -496,7 +496,7 @@ button:hover {
     padding: 40px 20px 20px 30px;
   }
   #joinGameDialog {
-    height: 25vh;
+    height: 250px;
   }
   .cell,
   .shipPart {

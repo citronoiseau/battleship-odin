@@ -53,7 +53,7 @@ export default function createJoinGameDialog() {
   input.id = "gameId";
   input.name = "gameId";
   input.type = "text";
-  input.placeholder = "aaa-aaa-aaaa";
+  input.placeholder = "aaa-aaa-aaa";
   input.required = true;
 
   formElement.appendChild(label);

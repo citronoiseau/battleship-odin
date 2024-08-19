@@ -238,10 +238,20 @@ export default function playerMenu(twoPlayers, gameId) {
     selectMenuContainer.appendChild(screenControlsContainer);
 
     const returnToStartMenuContainer = document.createElement("div");
-    createReturnToStartMenuButton(returnToStartMenuContainer, true, gameId);
+    const returnButton = createReturnToStartMenuButton(
+      returnToStartMenuContainer,
+      true,
+      gameId,
+    );
+    returnButton.addEventListener("click", () => {
+      multiplayer = false;
+    });
 
     const startGameButtonContainer = document.createElement("div");
-    createStartGameButton(startGameButtonContainer, gameId);
+    const startButton = createStartGameButton(startGameButtonContainer, gameId);
+    startButton.addEventListener("click", () => {
+      multiplayer = false;
+    });
 
     screenControlsContainer.appendChild(returnToStartMenuContainer);
     screenControlsContainer.appendChild(startGameButtonContainer);

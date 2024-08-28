@@ -326,11 +326,12 @@ export default function playerMenu(twoPlayers, gameId) {
     selectMenuContainer.appendChild(toast);
 
     id.addEventListener("click", () => {
-      const textToCopy = gameId;
+      const baseUrl = window.location.origin;
+      const fullUrl = `${baseUrl}?gameId=${gameId}`;
       navigator.clipboard
-        .writeText(textToCopy)
+        .writeText(fullUrl)
         .then(() => {
-          showToast(`Game ID copied to clipboard: ${gameId}`);
+          showToast(`Game url copied to clipboard: ${fullUrl}`);
         })
         .catch((error) => {
           console.error("Failed to copy text: ", error);
@@ -339,7 +340,7 @@ export default function playerMenu(twoPlayers, gameId) {
 
     const tooltipText = document.createElement("span");
     tooltipText.classList.add("tooltiptext");
-    tooltipText.textContent = "Left-click to copy";
+    tooltipText.textContent = "Left-click to copy game url";
     id.appendChild(tooltipText);
 
     multiplayerInfoContainer.appendChild(gameIdMessage);

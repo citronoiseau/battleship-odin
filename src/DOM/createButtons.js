@@ -127,7 +127,7 @@ export function createStartGameButton(parent, gameId) {
   if (gameId) {
     startGameButton.addEventListener("click", () => {
       const [firstPlayer] = handlePlayersMultiplayer.getPlayers();
-      if (firstPlayer.board.ships.length !== 10) {
+      if (firstPlayer.board.placedShips.size !== 10) {
         showToast("Place your ships first!", true);
         return;
       }

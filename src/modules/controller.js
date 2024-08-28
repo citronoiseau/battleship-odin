@@ -522,16 +522,16 @@ export function restartGame() {
 
 export function checkFirstPlayerShips() {
   const [player1, player2] = handlePlayers.getPlayers();
-  const ships1 = player1.board.ships;
-  if (ships1.length === 10) {
+  const ships1 = player1.board.placedShips;
+  if (ships1.size === 10) {
     return true;
   }
   return false;
 }
 export function checkSecondPlayerShips() {
   const [player1, player2] = handlePlayers.getPlayers();
-  const ships2 = player2.board.ships;
-  if (ships2.length === 10) {
+  const ships2 = player2.board.placedShips;
+  if (ships2.size === 10) {
     return true;
   }
   return false;

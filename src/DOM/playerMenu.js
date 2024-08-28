@@ -243,15 +243,10 @@ export default function playerMenu(twoPlayers, gameId) {
       true,
       gameId,
     );
-    returnButton.addEventListener("click", () => {
-      multiplayer = false;
-    });
+    returnButton.addEventListener("click", () => {});
 
     const startGameButtonContainer = document.createElement("div");
     const startButton = createStartGameButton(startGameButtonContainer, gameId);
-    startButton.addEventListener("click", () => {
-      multiplayer = false;
-    });
 
     screenControlsContainer.appendChild(returnToStartMenuContainer);
     screenControlsContainer.appendChild(startGameButtonContainer);
@@ -353,6 +348,8 @@ export default function playerMenu(twoPlayers, gameId) {
     const gameRulesMessage = document.createElement("div");
     gameRulesMessage.id = "gameRulesMessage";
     multiplayerInfoContainer.appendChild(gameRulesMessage);
+  } else {
+    multiplayer = false;
   }
 
   const buttonsContainer = document.createElement("div");
